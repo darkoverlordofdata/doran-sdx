@@ -1,0 +1,17 @@
+{
+  "name": "sdx",
+  "authors": [
+    "Bruce Davidson <darkoverlordofdata@gmail.com>"
+  ],
+  "description": "SDL2 Wrapper",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
