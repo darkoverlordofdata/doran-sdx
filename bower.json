@@ -4,7 +4,7 @@
     "Bruce Davidson <darkoverlordofdata@gmail.com>"
   ],
   "description": "SDL2 Wrapper",
-  "main": "",
+  "main": "CMakeLists.txt",
   "license": "MIT",
   "homepage": "",
   "ignore": [

@@ -1,0 +1,61 @@
+cmake_minimum_required ( VERSION 3.1 )
+#########################################################################################
+#
+#   Library: Sdx
+#
+#########################################################################################
+project ( sdx VERSION 0.1.0 )
+
+list (APPEND SOURCE .lib/sdx/src/AbstractGame.vala)
+list (APPEND SOURCE .lib/sdx/src/ApplicationListener.vala)
+list (APPEND SOURCE .lib/sdx/src/Color.vala)
+list (APPEND SOURCE .lib/sdx/src/Files.vala)
+list (APPEND SOURCE .lib/sdx/src/Font.vala)
+list (APPEND SOURCE .lib/sdx/src/InputMultiplexer.vala)
+list (APPEND SOURCE .lib/sdx/src/InputProcessor.vala)
+list (APPEND SOURCE .lib/sdx/src/Screen.vala)
+list (APPEND SOURCE .lib/sdx/src/audio/Sound.vala)
+list (APPEND SOURCE .lib/sdx/src/audio/audio.vala)
+list (APPEND SOURCE .lib/sdx/src/exceptions.vala)
+list (APPEND SOURCE .lib/sdx/src/files/FileHandle.vala)
+list (APPEND SOURCE .lib/sdx/src/files/files.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/BitmapFont.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/Camera.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/NinePatch.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/Sprite.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/Surface.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/TextureAtlas.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/TextureEnums.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/TextureRegion.vala)
+list (APPEND SOURCE .lib/sdx/src/graphics/graphics.vala)
+list (APPEND SOURCE .lib/sdx/src/math/Interpolation.vala)
+list (APPEND SOURCE .lib/sdx/src/math/Timeline.vala)
+list (APPEND SOURCE .lib/sdx/src/math/Tween.vala)
+list (APPEND SOURCE .lib/sdx/src/math/TweenAccessor.vala)
+list (APPEND SOURCE .lib/sdx/src/math/TweenManager.vala)
+list (APPEND SOURCE .lib/sdx/src/math/Tweenbase.vala)
+list (APPEND SOURCE .lib/sdx/src/math/Vector2.vala)
+list (APPEND SOURCE .lib/sdx/src/script/JsFactory.gs)
+list (APPEND SOURCE .lib/sdx/src/script/JsGame.gs)
+list (APPEND SOURCE .lib/sdx/src/script/api.gs)
+list (APPEND SOURCE .lib/sdx/src/sdx.vala)
+list (APPEND SOURCE .lib/sdx/src/ui/Button.vala)
+list (APPEND SOURCE .lib/sdx/src/ui/Component.vala)
+list (APPEND SOURCE .lib/sdx/src/ui/Label.vala)
+list (APPEND SOURCE .lib/sdx/src/utils/Cache.vala)
+list (APPEND SOURCE .lib/sdx/src/utils/File.vala)
+list (APPEND SOURCE .lib/sdx/src/utils/Json.vala)
+list (APPEND SOURCE .lib/sdx/src/utils/StringTokenizer.vala)
+list (APPEND SOURCE .lib/sdx/src/utils/utils.vala)
+
+list ( APPEND PACKAGE sdl2 )
+list ( APPEND PACKAGE SDL2_image )
+list ( APPEND PACKAGE SDL2_mixer )
+list ( APPEND PACKAGE SDL2_ttf )
+
+## Export to the parent scope:
+
+set ( PACKAGES "${PACKAGES};${PACKAGE}" PARENT_SCOPE )
+set ( VALA_SOURCES "${VALA_SOURCES};${SOURCE}" PARENT_SCOPE )
+set ( VALAC_OPTIONS "${VALAC_OPTIONS};--vapidir=${CMAKE_SOURCE_DIR}/.lib/sdx/vapis" PARENT_SCOPE )
+
