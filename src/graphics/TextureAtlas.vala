@@ -243,7 +243,10 @@ namespace Sdx.Graphics
                 while (true) {
                     var line = reader.ReadLine();
                     if (line == null) break;
-                    line = line.Replace("\r", "");
+                    //  line = line.Replace("\r", ""); // no regex!
+                    if (line.SubString(line.length-1) == "\r") {
+                        line = line.SubString(0, line.length-1);
+                    }
                     if (line.length == 0) { 
                         pageImage = null;
                     } else if (pageImage == null) {
