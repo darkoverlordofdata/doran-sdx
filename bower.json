@@ -6,6 +6,9 @@
   "description": "SDL2 Wrapper",
   "main": "CMakeLists.txt",
   "license": "MIT",
+  "dependencies": {
+    "mal": "git://github.com/darkoverlordofdata/doran-mal"
+  },
   "homepage": "",
   "ignore": [
     "**/.*",
