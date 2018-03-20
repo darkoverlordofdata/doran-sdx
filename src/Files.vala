@@ -17,8 +17,7 @@ using Sdx.Files;
 
 namespace Sdx {
 
-	public enum FileType 
-	{
+	public enum FileType {
 		Resource = 1,		/* Path to memory GResource */
 		Asset,				/* Android asset folder */
 		Absolute,			/* Absolute filesystem path.  */
@@ -26,18 +25,16 @@ namespace Sdx {
 		//  Parent = 0x10		/* Placeholder for the parent path  */
 	}
 	
-	public class DataInputStream : Object 
-	{
+	public class DataInputStream : Object {
 		public string[] data; 
 		public int ctr;
-		public DataInputStream(string data) 
-		{
+		public DataInputStream(string data) {
 			this.data = data.Split("\n");
 
 			ctr = 0;
 		}
-		public string? ReadLine() 
-		{
+
+		public string? readLine() {
 			return ctr<data.length ? data[ctr++] : null;
 		}
 	}

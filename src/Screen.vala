@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx 
-{
+namespace Sdx {
     /** 
      * Represents one of many application screens, such as a main menu, a settings menu, the game screen and so on.
 	 * 
      * Note that {@link Dispose} is not called automatically.
      * @see AbstractGame 
 	 */
-	public struct Screen 
-	{ 
+	public struct Screen { 
 		/** 
 		 * Called when this screen becomes the current screen for a {@link AbstractGame}. 
 		 */

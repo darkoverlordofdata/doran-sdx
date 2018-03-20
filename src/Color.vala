@@ -19,8 +19,7 @@
  * RGBA Color constants
  */
 using SDL.Video;
-namespace Sdx.Color
-{
+namespace Sdx.Color {
 	public const SDL.Video.Color AliceBlue = { 0xf0, 0xf8, 0xff, 0xff };
 	public const SDL.Video.Color AntiqueWhite = { 0xfa, 0xeb, 0xd7, 0xff };
 	public const SDL.Video.Color Aqua = { 0x00, 0xFF, 0x00, 0xFF };

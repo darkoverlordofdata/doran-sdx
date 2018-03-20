@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx 
-{
+namespace Sdx {
 	
-	public class Font : Object 
-	{
+	public class Font : Object {
 		public static int uniqueId = 0;
 		public int id = ++uniqueId;
 		public string path;
@@ -26,10 +24,9 @@ namespace Sdx
 		public SDL.RWops raw;
 
 
-		public Font(string path, int size) 
-		{
-			var file = Sdx.Files.Default(path);
-			raw = file.GetRWops();
+		public Font(string path, int size) {
+			var file = Sdx.Files.default(path);
+			raw = file.getRWops();
 			innerFont = new SDLTTF.Font.RW(raw, 0, size);
 			this.path = path;
 			this.size = size;
@@ -44,14 +41,11 @@ namespace Sdx
 		 * @param bg background color of sprite
 		 * @return new Surface
 		 */
-		public SDL.Video.Surface Render(string text, SDL.Video.Color fg, SDL.Video.Color? bg = null) 
-		{
-			if (bg == null)
-			{
+		public SDL.Video.Surface render(string text, SDL.Video.Color fg, SDL.Video.Color? bg = null) {
+			if (bg == null) {
 				return innerFont.Render(text, fg);
 			}
-			else
-			{
+			else {
 				return innerFont.RenderShaded(text, fg, bg);
 			}
 		}

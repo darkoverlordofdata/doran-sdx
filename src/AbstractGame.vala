@@ -24,38 +24,37 @@ namespace Sdx
     /**
      * Base game object
      */
-    public class AbstractGame : Object 
-    {
+    public class AbstractGame : Object {
 		public int width;
 		public int height;
 		public delegate void AbstractUpdate();
 		public delegate void AbstractDraw();
-		public AbstractUpdate Update = () => {};
-		public AbstractDraw Draw = () => {};
-		public AbstractGame() 
-		{
+		public AbstractUpdate update = () => {};
+		public AbstractDraw draw = () => {};
+		public AbstractGame() {
 			// forces the subclassed lambda context to be reference counted
 			var r = new AbstractReference();
 		}
-		public void Start() 
-		{
-			Sdx.Start();
+
+		public void start() {
+			Sdx.start();
+		}
+		public void onDraw(AbstractDraw draw) {
+			this.draw = draw;
 		}
 	}
  
     /**
      * Base platformer object
      */
-	public class AbstractPlatform : Object 
-	{
+	public class AbstractPlatform : Object {
 		public int width;
 		public int height;
 		public delegate void AbstractUpdate(int tick);
 		public delegate void AbstractDraw(int tick);
-		public AbstractUpdate Update = (tick) => {};
-		public AbstractDraw Draw = (tick) => {};
-		public AbstractPlatform() 
-		{
+		public AbstractUpdate update = (tick) => {};
+		public AbstractDraw draw = (tick) => {};
+		public AbstractPlatform() {
 			// forces the subclassed lambda context to be reference counted
 			var r = new AbstractReference();
 		}

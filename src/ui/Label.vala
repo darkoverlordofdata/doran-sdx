@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx.Ui 
-{
-    public class Container : Component
-    {
-        public Container(Sdx.Graphics.Sprite sprite) 
-        {
+namespace Sdx.Ui {
+    public class Container : Component {
+        public Container(Sdx.Graphics.Sprite sprite) {
             base();
             image = { sprite };
-            image[0].SetCentered(false);
+            image[0].setCentered(false);
             bounds.w = image[0].width;
             bounds.h = image[0].height;
         }
@@ -31,10 +28,8 @@ namespace Sdx.Ui
      * A label is just a sprite that renders as a child of the components subsystem.
      * The sprite can be an image or generated from text, or ...
      */
-    public class Label : Component 
-    {
-        public Label()
-        {
+    public class Label : Component {
+        public Label() {
             base();
             kind = Kind.Label;
         }
@@ -48,7 +43,7 @@ namespace Sdx.Ui
                 foreground = fg;
                 background = bg;
                 image = { new Sdx.Graphics.Sprite.TextSprite(this.text, this.font, foreground, background) };
-                image[0].SetCentered(false);
+                image[0].setCentered(false);
                 bounds.w = image[0].width;
                 bounds.h = image[0].height;
             }
@@ -62,7 +57,7 @@ namespace Sdx.Ui
                 this.font = font;
                 foreground = fg;
                 image = { new Sdx.Graphics.Sprite.UISprite(bg, this.text, this.font, foreground, 100, 40) };
-                image[0].SetCentered(false);
+                image[0].setCentered(false);
                 bounds.w = image[0].width;
                 bounds.h = image[0].height;
             }

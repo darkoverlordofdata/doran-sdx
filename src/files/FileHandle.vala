@@ -13,20 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx.Files 
-{
+namespace Sdx.Files {
 
 	/**
 	 * get a better grip on the file object
 	 */	
-	public class FileHandle : Object 
-	{
+	public class FileHandle : Object {
 		private Utils.File file;
 		private string path;
 		private FileType type;
 
-		public FileHandle(string path, FileType type) 
-		{
+		public FileHandle(string path, FileType type) {
 			this.type = type;
 			this.path = path;
 			this.file = new Utils.File(path);
@@ -35,42 +32,36 @@ namespace Sdx.Files
 		/**
 		 * Loads a raw resource value
 		 */
-		public SDL.RWops GetRWops() 
-		{
-			if (type == FileType.Resource) 
-			{
+		public SDL.RWops getRWops() {
+			if (type == FileType.Resource) {
 #if (ANDROID || EMSCRIPTEN || NOGOBJECT)
 				throw new SdlException.InvalidForPlatform("Resource not available");
 #else
-				var path = GetPath().Replace("\\", "/");
+				var path = getPath().Replace("\\", "/");
 
                 if (path[path.length-1] == (char)13)
                     path = path.SubString(0, path.length-1);
 				var bytes = GLib.ResourcesLookupData(Sdx.resourceBase + "/" + path, 0);
                 var raw = new SDL.RWops.FromMem((void*)bytes.GetData(), (int)bytes.GetSize());
                 if (raw == null)
-					throw new SdlException.UnableToLoadResource(GetPath());
+					throw new SdlException.UnableToLoadResource(getPath());
                 return raw;
 #endif				
-			} 
-			else 
-			{
-                var raw = new SDL.RWops.FromFile(GetPath(), "r");
+			} else {
+                var raw = new SDL.RWops.FromFile(getPath(), "r");
 				if (raw == null)
-					throw new SdlException.UnableToLoadResource(GetPath());
+					throw new SdlException.UnableToLoadResource(getPath());
                 return raw;
 
 			}
 		}
 
-		public string Read() 
-		{
-			if (type == FileType.Resource) 
-			{
+		public string read() {
+			if (type == FileType.Resource) {
 #if (ANDROID || EMSCRIPTEN || NOGOBJECT)
 				throw new SdlException.InvalidForPlatform("Resource not available");
 #else
-				var path = GetPath().Replace("\\", "/");
+				var path = getPath().Replace("\\", "/");
 
                 if (path[path.length-1] == (char)13)
                     path = path.SubString(0, path.length-1);
@@ -80,37 +71,30 @@ namespace Sdx.Files
 				var buffer = new uint8[100];
 				while (ready) {
 					var size = st.Read(buffer);
-					if (size > 0) 
-					{
+					if (size > 0) {
 						buffer[size] = 0;
 						sb.Append((string) buffer);
-					} 
-					else 
-					{
+					} else {
 						ready = false;
 					}
 				}
 				return sb.str;
 #endif
-			} 
-			else 
-			{
-				return file.Read();
+			} else {
+				return file.read();
 			}
 		}
-		public FileType GetType() 
-		{
+
+		public FileType getType() {
 			return type;
 		}
 
-		public string GetName() 
-		{
-			return file.GetName();
+		public string getName() {
+			return file.getName();
 		}
 
-		public string GetExt() 
-		{
-            var name = GetName();
+		public string getExt() {
+            var name = getName();
             var i = name.LastIndexOf(".");
             if (i < 0) return "";
 			var ext = name.SubString(i);
@@ -119,34 +103,27 @@ namespace Sdx.Files
 			return ext;
 		}
 
-		public string GetPath() 
-		{
-			return file.GetPath();
+		public string getPath() {
+			return file.getPath();
 		}
 
-		public FileHandle GetParent() 
-		{
-			return new FileHandle(file.GetParent(), type); //FileType.Parent);
+		public FileHandle getParent() {
+			return new FileHandle(file.getParent(), type); //FileType.Parent);
 		}
 
-		public bool Exists() 
-		{
-			if (type == FileType.Resource) 
-			{
+		public bool exists() {
+			if (type == FileType.Resource) {
 				return true;
-			} 
-			else 
-			{
-				return file.Exists();
+			} else {
+				return file.exists();
 			}
 		}
 
 		/**
 		 * Gets a file that is a sibling
 		 */
-		public FileHandle Child(string name) 
-		{
-            return new FileHandle(file.GetPath() + Utils.PathSeparator + name, type);
+		public FileHandle child(string name) {
+            return new FileHandle(file.getPath() + Utils.PathSeparator + name, type);
 		}
 
 	}

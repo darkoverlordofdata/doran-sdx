@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace  Sdx.Math 
-{
+namespace  Sdx.Math {
     /**
      * A Timeline can be used to create complex animations made of sequences and
      * parallel sets of Tweens.
@@ -50,8 +49,7 @@ namespace  Sdx.Math
      * @see TweenManager
      * @see Tweenbase.TweenCallback
      */
-    public class Timeline : Tweenbase
-    {
+    public class Timeline : Tweenbase {
         // -------------------------------------------------------------------------
         // Static -- factories
         // -------------------------------------------------------------------------
@@ -60,10 +58,9 @@ namespace  Sdx.Math
          * Creates a new timeline with a 'sequence' behavior. Its children will
          * be delayed so that they are triggered one after the other.
          */
-        public static Timeline CreateSequence() 
-        {
-            var tl = pool.IsEmpty() ? new Timeline() : (Timeline)pool.Pop().Reset();
-            tl.Setup(TimelineModes.SEQUENCE);
+        public static Timeline createSequence() {
+            var tl = pool.IsEmpty() ? new Timeline() : (Timeline)pool.Pop().reset();
+            tl.setup(TimelineModes.SEQUENCE);
             return tl;
         }
         
@@ -71,9 +68,9 @@ namespace  Sdx.Math
          * Creates a new timeline with a 'parallel' behavior. Its children will be
          * triggered all at once.
          */
-        public static Timeline CreateParallel() {
-            var tl = pool.IsEmpty() ? new Timeline() : (Timeline)pool.Pop().Reset();
-            tl.Setup(TimelineModes.PARALLEL);
+        public static Timeline createParallel() {
+            var tl = pool.IsEmpty() ? new Timeline() : (Timeline)pool.Pop().reset();
+            tl.setup(TimelineModes.PARALLEL);
             return tl;
         }
 
@@ -82,18 +79,16 @@ namespace  Sdx.Math
         // Setup
         // -------------------------------------------------------------------------
 
-        private Timeline()
-        {
+        private Timeline() {
             base();
-            kind = TweenKind.TIMELINE;
-            Overrides();
-            Reset();
+            _kind = TweenKind.TIMELINE;
+            overrides();
+            reset();
         }
 
-        protected void Setup(TimelineModes mode) 
-        {
-            this.mode = mode;
-            this.current = this;
+        protected void setup(TimelineModes mode) {
+            _mode = mode;
+            _current = this;
         }
 
         // -------------------------------------------------------------------------
@@ -106,28 +101,27 @@ namespace  Sdx.Math
          *
          * @return The current timeline, for chaining instructions.
          */
-        public Timeline Push(Tween tween) {
-            if (isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
-            if (kind == TweenKind.TIMELINE)
-            {
-                if (tween.current != tween) 
+        public Timeline push(Tween tween) {
+            if (_isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
+            if (_kind == TweenKind.TIMELINE) {
+                if (tween._current != tween) 
                     throw new Exception.RuntimeException("You forgot to call a few 'end()' statements in your pushed timeline");
-                tween.parent = current;
+                tween._parent = _current;
             }
-            current.children.Add(tween);
+            _current._children.Add(tween);
             return this;
         }
 
         /**
          * Adds a pause to the timeline. The pause may be negative if you want to
-         * overlap the preceding and following children.
+         * overlap the preceding and following _children.
          *
          * @param time A positive or negative duration.
          * @return The current timeline, for chaining instructions.
          */
-        public Timeline PushPause(float time) {
-            if (isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
-            current.children.Add(Tween.Mark().Delay(time));
+        public Timeline pushPause(float time) {
+            if (_isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
+            _current._children.Add(Tween.mark().delay(time));
             return this;
         }
 
@@ -137,13 +131,13 @@ namespace  Sdx.Math
          *
          * @return The current timeline, for chaining instructions.
          */
-        public Timeline BeginSequence() {
-            if (isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
-            var tl = pool.IsEmpty() ? new Timeline() : (Timeline)pool.Pop().Reset();
-            tl.parent = current;
-            tl.mode = TimelineModes.SEQUENCE;
-            current.children.Add(tl);
-            current = tl;
+        public Timeline beginSequence() {
+            if (_isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
+            var tl = pool.IsEmpty() ? new Timeline() : (Timeline)pool.Pop().reset();
+            tl._parent = _current;
+            tl._mode = TimelineModes.SEQUENCE;
+            _current._children.Add(tl);
+            _current = tl;
             return this;
         }
 
@@ -153,13 +147,13 @@ namespace  Sdx.Math
          *
          * @return The current timeline, for chaining instructions.
          */
-        public Timeline BeginParallel() {
-            if (isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
-            var tl = pool.IsEmpty() ? new Timeline() : (Timeline)pool.Pop().Reset();
-            tl.parent = current;
-            tl.mode = TimelineModes.PARALLEL;
-            current.children.Add(tl);
-            current = tl;
+        public Timeline beginParallel() {
+            if (_isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
+            var tl = pool.IsEmpty() ? new Timeline() : (Timeline)pool.Pop().reset();
+            tl._parent = _current;
+            tl._mode = TimelineModes.PARALLEL;
+            _current._children.Add(tl);
+            _current = tl;
             return this;
         }
 
@@ -168,137 +162,127 @@ namespace  Sdx.Math
          *
          * @return The current timeline, for chaining instructions.
          */
-        public Timeline End() {
-            if (isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
-            if (current == this) throw new Exception.RuntimeException("Nothing to end...");
-            current = current.parent;
+        public Timeline end() {
+            if (_isBuilt) throw new Exception.RuntimeException("You can't push anything to a timeline once it is started");
+            if (_current == this) throw new Exception.RuntimeException("Nothing to end...");
+            _current = _current._parent;
             return this;
         }
 
         /**
-         * Gets a list of the timeline children. If the timeline is started, the
+         * Gets a list of the timeline _children. If the timeline is started, the
          * list will be immutable.
          */
-        public GenericArray<Tweenbase> GetChildren() {
+        public GenericArray<Tweenbase> getChildren() {
             //  if (isBuilt) return Collections.unmodifiableList(current.children);
             //  else return current.children;
-            return current.children;            
+            return _current._children;            
         }
 
         // -------------------------------------------------------------------------
         // Overrides
         // -------------------------------------------------------------------------
-        private void Overrides()
-        {
-            var Reset_ = Reset;
-            var Start_ = Start;
-            Reset = () => 
-            {
-                Reset_();
-                children = new GenericArray<Timeline>();
-                current = parent = null;
+        private void overrides() {
+            var reset_ = reset;
+            var start_ = start;
+            reset = () => {
+                reset_();
+                _children = new GenericArray<Timeline>();
+                _current = _parent = null;
 
-                isBuilt = false;
+                _isBuilt = false;
                 return this;
             };
         
-            Build = () =>
-            {
-                if (isBuilt) return this;
+            build = () => {
+                if (_isBuilt) return this;
 
-                duration = 0;
+                _duration = 0;
 
-                for (int i=0; i<children.length; i++) 
-                {
-                    var obj = children.Get(i);
+                for (int i=0; i<_children.length; i++) {
+                    var obj = _children[i];
 
-                    if (obj.GetRepeatCount() < 0) throw new Exception.RuntimeException("You can't push an object with infinite repetitions in a timeline");
-                    obj.Build();
+                    if (obj.getRepeatCount() < 0) throw new Exception.RuntimeException("You can't push an object with infinite repetitions in a timeline");
+                    obj.build();
 
-                    switch (mode) 
-                    {
+                    switch (_mode) {
                         case TimelineModes.SEQUENCE:
-                            float tDelay = duration;
-                            duration += obj.GetFullDuration();
-                            obj.delay += tDelay;
+                            float tDelay = _duration;
+                            _duration += obj.getFullDuration();
+                            obj._delay += tDelay;
                             break;
 
                         case TimelineModes.PARALLEL:
-                            duration = GLib.Math.fmaxf(duration, obj.GetFullDuration());
+                            _duration = GLib.Math.fmaxf(_duration, obj.getFullDuration());
                             break;
                     }
                 }
 
-                isBuilt = true;
+                _isBuilt = true;
                 return this;
 
             };
 
-            Start = () =>
-            {
-                Start_();
+            start = () => {
+                start_();
 
-                for (int i=0; i<children.length; i++)
-                {
-                    var obj = children.Get(i);
-                    obj.Start();
+                for (int i=0; i<_children.length; i++) {
+                    var obj = _children[i];
+                    obj.start();
                 }
 
                 return this;
             };
 
-            Free = () =>
-            {
-                for (int i=children.length-1; i>=0; i--) 
-                {
-                    var obj = children.Get(i);
-                    children.RemoveIndex(i);
-                    obj.Free();
+            clear = () => {
+                for (int i=_children.length-1; i>=0; i--) {
+                    var obj = _children[i];
+                    _children.RemoveIndex(i);
+                    obj.clear();
                 }
 
-                //  pool.free(this);
+                //  pool.clear(this);
             };
 
-            UpdateOverride = (step, lastStep, isIterationStep, delta) =>
-            {
+            updateOverride = (step, lastStep, isIterationStep, delta) => {
                 if (!isIterationStep && step > lastStep) {
                     assert(delta >= 0);
-                    float dt = IsReverse(lastStep) ? -delta-1 : delta+1;
-                    for (int i=0, n=children.length; i<n; i++) children.Get(i).Update(dt);
+                    float dt = isReverse(lastStep) ? -delta-1 : delta+1;
+                    for (int i=0, n=_children.length; i<n; i++) _children[i].update(dt);
                     return;
                 }
 
                 if (!isIterationStep && step < lastStep) {
                     assert(delta <= 0);
-                    float dt = IsReverse(lastStep) ? -delta-1 : delta+1;
-                    for (int i=children.length-1; i>=0; i--) children.Get(i).Update(dt);
+                    float dt = isReverse(lastStep) ? -delta-1 : delta+1;
+                    for (int i=_children.length-1; i>=0; i--) _children[i].update(dt);
                     return;
                 }
 
                 assert(isIterationStep);
 
                 if (step > lastStep) {
-                    if (IsReverse(step)) {
-                        ForceEndValues();
-                        for (int i=0, n=children.length; i<n; i++) children.Get(i).Update(delta);
+                    if (isReverse(step)) {
+                        forceEndValues();
+                        for (int i=0, n=_children.length; i<n; i++) _children[i].update(delta);
                     } else {
-                        ForceStartValues();
-                        for (int i=0, n=children.length; i<n; i++) children.Get(i).Update(delta);
+                        forceStartValues();
+                        for (int i=0, n=_children.length; i<n; i++) _children[i].update(delta);
                     }
 
                 } else if (step < lastStep) {
-                    if (IsReverse(step)) {
-                        ForceStartValues();
-                        for (int i=children.length-1; i>=0; i--) children.Get(i).Update(delta);
+                    if (isReverse(step)) {
+                        forceStartValues();
+                        for (int i=_children.length-1; i>=0; i--) _children[i].update(delta);
                     } else {
-                        ForceEndValues();
-                        for (int i=children.length-1; i>=0; i--) children.Get(i).Update(delta);
+                        forceEndValues();
+                        for (int i=_children.length-1; i>=0; i--) _children[i].update(delta);
                     }
 
                 } else {
-                    float dt = IsReverse(step) ? -delta : delta;
-                    if (delta >= 0) for (int i=0, n=children.length; i<n; i++) children.Get(i).Update(dt);
-                    else for (int i=children.length-1; i>=0; i--) children.Get(i).Update(dt);
+                    float dt = isReverse(step) ? -delta : delta;
+                    if (delta >= 0) for (int i=0, n=_children.length; i<n; i++) _children[i].update(dt);
+                    else for (int i=_children.length-1; i>=0; i--) _children[i].update(dt);
                 }
 
             };
@@ -306,27 +290,24 @@ namespace  Sdx.Math
             // -------------------------------------------------------------------------
             // BaseTween impl.
             // -------------------------------------------------------------------------
-            ForceStartValues = () =>
-            {
-                for (int i=children.length-1; i>=0; i--) {
-                    var obj = children.Get(i);
-                    obj.ForceToStart();
+            forceStartValues = () => {
+                for (int i=_children.length-1; i>=0; i--) {
+                    var obj = _children[i];
+                    obj.forceToStart();
                 }
             };
 
-            ForceEndValues = () =>
-            {
-                for (int i=0, n=children.length; i<n; i++) {
-                    var obj = children.Get(i);
-                    obj.ForceToEnd(duration);
+            forceEndValues = () => {
+                for (int i=0, n=_children.length; i<n; i++) {
+                    var obj = _children[i];
+                    obj.forceToEnd(_duration);
                 }
             };
 
-            ContainsTarget = (target, tweenType) =>
-            {
-                for (int i=0, n=children.length; i<n; i++) {
-                    var obj = children.Get(i);
-                    if (obj.ContainsTarget(target, tweenType)) return true;
+            containsTarget = (target, tweenType) => {
+                for (int i=0, n=_children.length; i<n; i++) {
+                    var obj = _children[i];
+                    if (obj.containsTarget(target, tweenType)) return true;
                 }
                 return false;
             };

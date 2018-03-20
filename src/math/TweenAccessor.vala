@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace  Sdx.Math 
-{
+namespace  Sdx.Math {
     
     /**
      * Gets one or many values from the target object associated to the
@@ -36,14 +35,12 @@ namespace  Sdx.Math
      * @param newValues The new values determined by the Tween Engine.
      */
     public delegate void TweenAccessorSetValues(void* target, int tweenType, ref float[] newValues);
-    public class TweenAccessor : Object
-    {
-        public TweenAccessorGetValues GetValues = (target, type, ref values) => 
-        {
+    public class TweenAccessor : Object {
+        public TweenAccessorGetValues getValues = (target, type, ref values) => {
             return 0;
         };
 
-        public TweenAccessorSetValues SetValues = (target, type, ref values) => {};
+        public TweenAccessorSetValues setValues = (target, type, ref values) => {};
 
         
     }

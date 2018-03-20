@@ -16,8 +16,7 @@
 using Sdx.Files;
 using Sdx.Graphics;
 
-namespace Sdx.Graphics 
-{
+namespace Sdx.Graphics {
 
     /**
      * load a libgdx format atlas
@@ -30,11 +29,11 @@ namespace Sdx.Graphics
          * @param flip images?
          */
         public TextureAtlas(FileHandle packFile, FileHandle? imageDir=null, bool flip=false) {
-            Load(new TextureAtlasData(packFile, imageDir == null ? packFile.GetParent() : imageDir, flip));
+            load(new TextureAtlasData(packFile, imageDir == null ? packFile.getParent() : imageDir, flip));
         }
 
 
-        public AtlasRegion? FindRegion(string name, int index=-1) {
+        public AtlasRegion? findRegion(string name, int index=-1) {
             foreach (var region in regions) {   
                 if (index == -1) {
                     if (region.name == name) return region;
@@ -45,7 +44,7 @@ namespace Sdx.Graphics
             return null;
         }
 
-        public Sprite? CreateSprite(string name, int index=-1) { 
+        public Sprite? createSprite(string name, int index=-1) { 
             foreach (var region in regions) {
                 if (index == -1) {
                     if (region.name == name) {
@@ -59,11 +58,11 @@ namespace Sdx.Graphics
             return null;
         }
         
-        public Sprite? CreateUI(string name, string text, Sdx.Font font, SDL.Video.Color color, int width = 125, int height = 80) { 
-            return new Sprite.UISprite(CreatePatch(name), text, font, color, width, height);
+        public Sprite? createUI(string name, string text, Sdx.Font font, SDL.Video.Color color, int width = 125, int height = 80) { 
+            return new Sprite.UISprite(createPatch(name), text, font, color, width, height);
         }
 
-        public NinePatch? CreatePatch(string name) {
+        public NinePatch? createPatch(string name) {
             foreach (var region in regions) {
                 if (region.name == name) {
                     var splits = region.splits;
@@ -76,7 +75,7 @@ namespace Sdx.Graphics
             return null;
         }
 
-        private void Load(TextureAtlasData data) {
+        private void load(TextureAtlasData data) {
         
             Surface.TextureSurface? texture = null;
             var pageToTexture = new Surface.TextureSurface[0];
@@ -88,8 +87,8 @@ namespace Sdx.Graphics
                 } else {    
                     texture = page.texture;
                 }
-                texture.SetFilter(page.minFilter, page.magFilter);
-                texture.SetWrap(page.uWrap, page.vWrap);
+                texture.setFilter(page.minFilter, page.magFilter);
+                texture.setWrap(page.uWrap, page.vWrap);
                 pageToTexture += texture;
             }
 
@@ -108,7 +107,7 @@ namespace Sdx.Graphics
                 atlasRegion.rotate = region.rotate;
                 atlasRegion.splits = region.splits;
                 atlasRegion.pads = region.pads;
-                if (region.flip) atlasRegion.Flip(false, true);
+                if (region.flip) atlasRegion.flip(false, true);
                 regions.Add(atlasRegion);
             }
         }
@@ -205,8 +204,8 @@ namespace Sdx.Graphics
 	    /** 
          * Returns the number of tuple values read (1, 2 or 4). 
          */
-        public static int ReadTuple(DataInputStream reader) {
-            var line = reader.ReadLine();
+        public static int readTuple(DataInputStream reader) {
+            var line = reader.readLine();
             var ts = line.Split(":");
             if (ts.length == 0) throw new IOException.InvalidData("invalid line: %s", line);
             tuple = ts[1].Split(",");
@@ -219,8 +218,8 @@ namespace Sdx.Graphics
         /** 
          * Returns the single value 
          */
-        public static string ReadValue(DataInputStream reader) {
-            var line = reader.ReadLine();
+        public static string readValue(DataInputStream reader) {
+            var line = reader.readLine();
             var ts = line.Split(":");
             if (ts.length == 0) throw new IOException.InvalidData("invalid line: %s ", line);
             return ts[1];
@@ -237,11 +236,11 @@ namespace Sdx.Graphics
         public TextureAtlasData(FileHandle packFile, FileHandle imagesDir, bool flip) {
             pages = new List<Page>();
             regions = new List<Region>();
-            var reader = new DataInputStream(packFile.Read());
+            var reader = new DataInputStream(packFile.read());
             try {
                 Page pageImage = null;
                 while (true) {
-                    var line = reader.ReadLine();
+                    var line = reader.readLine();
                     if (line == null) break;
                     //  line = line.Replace("\r", ""); // no regex!
                     if (line.SubString(line.length-1) == "\r") {
@@ -250,19 +249,19 @@ namespace Sdx.Graphics
                     if (line.length == 0) { 
                         pageImage = null;
                     } else if (pageImage == null) {
-                        var file = imagesDir.Child(line);
+                        var file = imagesDir.child(line);
                         var width = 0;
                         var height = 0;
-                        if (ReadTuple(reader) == 2) {
+                        if (readTuple(reader) == 2) {
                             width = int.Parse(tuple[0]);
                             height = int.Parse(tuple[1]);
-                            ReadTuple(reader);
+                            readTuple(reader);
                         }
                         var format = Format.from(tuple[0].strip());
-                        ReadTuple(reader);
+                        readTuple(reader);
                         var min = TextureFilter.from(tuple[0].strip());
                         var max = TextureFilter.from(tuple[1].strip());
-                        var direction = ReadValue(reader);
+                        var direction = readValue(reader);
                         var repeatX = TextureWrap.ClampToEdge;
                         var repeatY = TextureWrap.ClampToEdge;
                         if (direction == "x") {
@@ -277,39 +276,39 @@ namespace Sdx.Graphics
                         pageImage = new Page(file, width, height, min.isMipMap(), format, min, max, repeatX, repeatY);
                         pages.Add(pageImage);
                     } else {
-                        var rotate = bool.Parse(ReadValue(reader));
+                        var rotate = bool.Parse(readValue(reader));
 
-                        ReadTuple(reader);
+                        readTuple(reader);
                         var left = int.Parse(tuple[0]);
                         var top = int.Parse(tuple[1]);
 
-                        ReadTuple(reader);
+                        readTuple(reader);
                         var width = int.Parse(tuple[0]);
                         var height = int.Parse(tuple[1]);
 
                         var region = new Region(pageImage, left, top, width, height, line, rotate);
 
-                        if (ReadTuple(reader) == 4) {
+                        if (readTuple(reader) == 4) {
                             region.slice9 = true;
                             region.splits = { int.Parse(tuple[0]), int.Parse(tuple[1]), 
                                 int.Parse(tuple[2]), int.Parse(tuple[3]) };
 
-                            if (ReadTuple(reader) == 4) {
+                            if (readTuple(reader) == 4) {
                                 region.pads = { int.Parse(tuple[0]), int.Parse(tuple[1]), 
                                     int.Parse(tuple[2]), int.Parse(tuple[3]) };
 
-                                ReadTuple(reader);
+                                readTuple(reader);
                             }
                         }
 
                         region.originalWidth = int.Parse(tuple[0]);
                         region.originalHeight = int.Parse(tuple[1]);
 
-                        ReadTuple(reader);
+                        readTuple(reader);
                         region.offsetX = int.Parse(tuple[0]);
                         region.offsetY = int.Parse(tuple[1]);
 
-                        region.index = int.Parse(ReadValue(reader));
+                        region.index = int.Parse(readValue(reader));
 
                         if (flip) region.flip = true;
 

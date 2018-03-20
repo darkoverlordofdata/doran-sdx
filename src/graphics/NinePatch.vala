@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx.Graphics 
-{
+namespace Sdx.Graphics {
     /**
      * patch image
      * 
@@ -65,8 +64,7 @@ namespace Sdx.Graphics
         private int sourceTop;
         private int sourceLeft;
 
-        public NinePatch(TextureRegion region, int left, int right, int top, int bottom)
-        {
+        public NinePatch(TextureRegion region, int left, int right, int top, int bottom) {
             idx = 0;
             sourceTop = region.top;
             sourceLeft = region.left;
@@ -75,32 +73,28 @@ namespace Sdx.Graphics
             this.right = right;
             this.bottom = bottom;
             if (region == null) throw new SdlException.IllegalArgumentException("region cannot be null.");
-            var middleWidth = region.GetRegionWidth() - left - right;
-            var middleHeight = region.GetRegionHeight() - top - bottom;
+            var middleWidth = region.getRegionWidth() - left - right;
+            var middleHeight = region.getRegionHeight() - top - bottom;
 
             var patches = new TextureRegion[9];
-            if (top > 0)
-            {
+            if (top > 0) {
                 if (left > 0) patches[TOP_LEFT] = new TextureRegion.FromRegion(region, 0, 0, left, top);
                 if (middleWidth > 0) patches[TOP_CENTER] = new TextureRegion.FromRegion(region, left, 0, middleWidth, top);
                 if (right > 0) patches[TOP_RIGHT] = new TextureRegion.FromRegion(region, left + middleWidth, 0, right, top);
             }
-            if (middleHeight > 0)
-            {
+            if (middleHeight > 0) {
                 if (left > 0) patches[MIDDLE_LEFT] = new TextureRegion.FromRegion(region, 0, top, left, middleHeight);
                 if (middleWidth > 0) patches[MIDDLE_CENTER] = new TextureRegion.FromRegion(region, left, top, middleWidth, middleHeight);
                 if (right > 0) patches[MIDDLE_RIGHT] = new TextureRegion.FromRegion(region, left + middleWidth, top, right, middleHeight);
             }
-            if (bottom > 0) 
-            {
+            if (bottom > 0) {
                 if (left > 0) patches[BOTTOM_LEFT] = new TextureRegion.FromRegion(region, 0, top + middleHeight, left, bottom);
                 if (middleWidth > 0) patches[BOTTOM_CENTER] = new TextureRegion.FromRegion(region, left, top + middleHeight, middleWidth, bottom);
                 if (right > 0) patches[BOTTOM_RIGHT] = new TextureRegion.FromRegion(region, left + middleWidth, top + middleHeight, right, bottom);
             }
 
             // If split only vertical, move splits from right to center.
-            if (left == 0 && middleWidth == 0)
-            {
+            if (left == 0 && middleWidth == 0) {
                 patches[TOP_CENTER] = patches[TOP_RIGHT];
                 patches[MIDDLE_CENTER] = patches[MIDDLE_RIGHT];
                 patches[BOTTOM_CENTER] = patches[BOTTOM_RIGHT];
@@ -109,8 +103,7 @@ namespace Sdx.Graphics
                 patches[BOTTOM_RIGHT] = null;
             }
             // If split only horizontal, move splits from bottom to center.
-            if (top == 0 && middleHeight == 0)
-            {
+            if (top == 0 && middleHeight == 0) {
                 patches[MIDDLE_LEFT] = patches[BOTTOM_LEFT];
                 patches[MIDDLE_CENTER] = patches[BOTTOM_CENTER];
                 patches[MIDDLE_RIGHT] = patches[BOTTOM_RIGHT];
@@ -118,71 +111,61 @@ namespace Sdx.Graphics
                 patches[BOTTOM_CENTER] = null;
                 patches[BOTTOM_RIGHT] = null;
             }
-            Load(patches);
+            load(patches);
         }   
 
-        private void Load(TextureRegion[] patches) 
-        {
+        private void load(TextureRegion[] patches) {
             var color = Color.White;
 
-            if (patches[TOP_LEFT] != null)
-            { 
-                topLeft = Add(patches[TOP_LEFT], color, false, false);
-                leftWidth = (int)GLib.Math.fmax(leftWidth, patches[TOP_LEFT].GetRegionWidth());
-                topHeight = (int)GLib.Math.fmax(topHeight, patches[TOP_LEFT].GetRegionHeight());
+            if (patches[TOP_LEFT] != null) { 
+                topLeft = add(patches[TOP_LEFT], color, false, false);
+                leftWidth = (int)GLib.Math.fmax(leftWidth, patches[TOP_LEFT].getRegionWidth());
+                topHeight = (int)GLib.Math.fmax(topHeight, patches[TOP_LEFT].getRegionHeight());
             }
-            if (patches[TOP_CENTER] != null)
-            { 
-                topCenter = Add(patches[TOP_CENTER], color, true, false);
-                middleWidth = (int)GLib.Math.fmax(middleWidth, patches[TOP_CENTER].GetRegionWidth());
-                topHeight = (int)GLib.Math.fmax(topHeight, patches[TOP_CENTER].GetRegionHeight());
+            if (patches[TOP_CENTER] != null) { 
+                topCenter = add(patches[TOP_CENTER], color, true, false);
+                middleWidth = (int)GLib.Math.fmax(middleWidth, patches[TOP_CENTER].getRegionWidth());
+                topHeight = (int)GLib.Math.fmax(topHeight, patches[TOP_CENTER].getRegionHeight());
             }
-            if (patches[TOP_RIGHT] != null)
-            { 
-                topRight = Add(patches[TOP_RIGHT], color, false, false);
-                rightWidth = (int)GLib.Math.fmax(rightWidth, patches[TOP_RIGHT].GetRegionWidth());
-                topHeight = (int)GLib.Math.fmax(topHeight, patches[TOP_RIGHT].GetRegionHeight());
+            if (patches[TOP_RIGHT] != null) { 
+                topRight = add(patches[TOP_RIGHT], color, false, false);
+                rightWidth = (int)GLib.Math.fmax(rightWidth, patches[TOP_RIGHT].getRegionWidth());
+                topHeight = (int)GLib.Math.fmax(topHeight, patches[TOP_RIGHT].getRegionHeight());
             }
-            if (patches[MIDDLE_LEFT] != null)
-            { 
-                middleLeft = Add(patches[MIDDLE_LEFT], color, false, true);
-                leftWidth = (int)GLib.Math.fmax(leftWidth, patches[MIDDLE_LEFT].GetRegionWidth());
-                middleHeight = (int)GLib.Math.fmax(middleHeight, patches[MIDDLE_LEFT].GetRegionHeight());
+            if (patches[MIDDLE_LEFT] != null) { 
+                middleLeft = add(patches[MIDDLE_LEFT], color, false, true);
+                leftWidth = (int)GLib.Math.fmax(leftWidth, patches[MIDDLE_LEFT].getRegionWidth());
+                middleHeight = (int)GLib.Math.fmax(middleHeight, patches[MIDDLE_LEFT].getRegionHeight());
             }            
-            if (patches[MIDDLE_CENTER] != null)
-            { 
-                middleCenter = Add(patches[MIDDLE_CENTER], color, true, true);
-                middleWidth = (int)GLib.Math.fmax(middleWidth, patches[MIDDLE_CENTER].GetRegionWidth());
-                middleHeight = (int)GLib.Math.fmax(middleHeight, patches[MIDDLE_CENTER].GetRegionHeight());
+            if (patches[MIDDLE_CENTER] != null) { 
+                middleCenter = add(patches[MIDDLE_CENTER], color, true, true);
+                middleWidth = (int)GLib.Math.fmax(middleWidth, patches[MIDDLE_CENTER].getRegionWidth());
+                middleHeight = (int)GLib.Math.fmax(middleHeight, patches[MIDDLE_CENTER].getRegionHeight());
             }
-            if (patches[MIDDLE_RIGHT] != null)
-            { 
-                middleRight = Add(patches[MIDDLE_RIGHT], color, false, true);
-                rightWidth = (int)GLib.Math.fmax(rightWidth, patches[MIDDLE_RIGHT].GetRegionWidth());
-                middleHeight = (int)GLib.Math.fmax(middleHeight, patches[MIDDLE_RIGHT].GetRegionHeight());
+            if (patches[MIDDLE_RIGHT] != null) { 
+                middleRight = add(patches[MIDDLE_RIGHT], color, false, true);
+                rightWidth = (int)GLib.Math.fmax(rightWidth, patches[MIDDLE_RIGHT].getRegionWidth());
+                middleHeight = (int)GLib.Math.fmax(middleHeight, patches[MIDDLE_RIGHT].getRegionHeight());
             }
-            if (patches[BOTTOM_LEFT] != null)
-            {
-                bottomLeft = Add(patches[BOTTOM_LEFT], color, false, false);
-                leftWidth = patches[BOTTOM_LEFT].GetRegionWidth();
-                bottomHeight = patches[BOTTOM_LEFT].GetRegionHeight();
+            if (patches[BOTTOM_LEFT] != null) {
+                bottomLeft = add(patches[BOTTOM_LEFT], color, false, false);
+                leftWidth = patches[BOTTOM_LEFT].getRegionWidth();
+                bottomHeight = patches[BOTTOM_LEFT].getRegionHeight();
             }
-            if (patches[BOTTOM_CENTER] != null)
-            { 
-                bottomCenter = Add(patches[BOTTOM_CENTER], color, true, false);
-                middleWidth = (int)GLib.Math.fmax(middleWidth, patches[BOTTOM_CENTER].GetRegionWidth());
-                bottomHeight = (int)GLib.Math.fmax(bottomHeight, patches[BOTTOM_CENTER].GetRegionHeight());
+            if (patches[BOTTOM_CENTER] != null) { 
+                bottomCenter = add(patches[BOTTOM_CENTER], color, true, false);
+                middleWidth = (int)GLib.Math.fmax(middleWidth, patches[BOTTOM_CENTER].getRegionWidth());
+                bottomHeight = (int)GLib.Math.fmax(bottomHeight, patches[BOTTOM_CENTER].getRegionHeight());
             }
-            if (patches[BOTTOM_RIGHT] != null)
-            { 
-                bottomRight = Add(patches[BOTTOM_RIGHT], color, false, false);
-                rightWidth = (int)GLib.Math.fmax(rightWidth, patches[BOTTOM_RIGHT].GetRegionWidth());
-                bottomHeight = (int)GLib.Math.fmax(bottomHeight, patches[BOTTOM_RIGHT].GetRegionHeight());
+            if (patches[BOTTOM_RIGHT] != null) { 
+                bottomRight = add(patches[BOTTOM_RIGHT], color, false, false);
+                rightWidth = (int)GLib.Math.fmax(rightWidth, patches[BOTTOM_RIGHT].getRegionWidth());
+                bottomHeight = (int)GLib.Math.fmax(bottomHeight, patches[BOTTOM_RIGHT].getRegionHeight());
             }
         }
             
         
-        private int Add(TextureRegion region, SDL.Video.Color color, bool isStretchW, bool isStretchH) {
+        private int add(TextureRegion region, SDL.Video.Color color, bool isStretchW, bool isStretchH) {
             if (texture == null)
                 texture = region.texture;
             else if (texture != region.texture) //
@@ -196,15 +179,13 @@ namespace Sdx.Graphics
             // Add half pixel offsets on stretchable dimensions to acolor bleeding when GL_LINEAR
             // filtering is used for the texture. This nudges the texture coordinate to the center
             // of the texel where the neighboring pixel has 0% contribution in linear blending mode.
-            if (isStretchW) 
-            {
+            if (isStretchW) {
                 var halfTexelWidth = 0.5f * 1.0f / texture.width;
                 u += halfTexelWidth;
                 u2 -= halfTexelWidth;
             }
             
-            if (isStretchH)
-            {
+            if (isStretchH) {
                 var halfTexelHeight = 0.5f * 1.0f / texture.height;
                 v -= halfTexelHeight;
                 v2 += halfTexelHeight;
@@ -219,70 +200,59 @@ namespace Sdx.Graphics
             return idx++;
         }
             
-        public void SetColor(SDL.Video.Color color) 
-        {
+        public void setColor(SDL.Video.Color color) {
             this.color = color;
         }
 
-        public SDL.Video.Color GetColor()
-        {
+        public SDL.Video.Color getColor() {
             return color;
         }
 
-        public float GetLeftWidth()
-        { 
+        public float getLeftWidth() { 
             return leftWidth;
         }
 
         /** 
          * Set the draw-time width of the three left edge patches 
          */
-        public void SetLeftWidth(float leftWidth) 
-        { 
+        public void setLeftWidth(float leftWidth) { 
             this.leftWidth = leftWidth;
         }
 
-        public float GetRightWidth()
-        {
+        public float getRightWidth() {
             return rightWidth;
         }
 
         /** 
          * Set the draw-time width of the three right edge patches 
          */
-        public void SetRightWidth(float rightWidth)
-        { 
+        public void setRightWidth(float rightWidth) { 
             this.rightWidth = rightWidth;
         }
 
-        public float GetTopHeight()
-        {
+        public float getTopHeight() {
             return topHeight;
         }
 
         /** 
          * Set the draw-time height of the three top edge patches 
          */
-        public void SetTopHeight(float topHeight)
-        { 
+        public void setTopHeight(float topHeight) { 
             this.topHeight = topHeight;
         }
 
-        public float GetBottomHeight()
-        {
+        public float getBottomHeight() {
             return bottomHeight;
         }
 
         /** 
          * Set the draw-time height of the three bottom edge patches 
          */
-        public void SetBottomHeight(float bottomHeight)
-        { 
+        public void setBottomHeight(float bottomHeight) { 
             this.bottomHeight = bottomHeight;
         }
 
-        public float GetMiddleWidth()
-        {
+        public float getMiddleWidth() {
             return middleWidth;
         }
 
@@ -291,13 +261,11 @@ namespace Sdx.Graphics
          * entire nine patch, minus the left and right width. This value is only used for computing the link #GetTotalWidth() default
          * total width. 
          */
-        public void SetMiddleWidth(float middleWidth)
-        { 
+        public void setMiddleWidth(float middleWidth) { 
             this.middleWidth = middleWidth;
         }
 
-        public float GetMiddleHeight()
-        {
+        public float getMiddleHeight() {
             return middleHeight;
         }
 
@@ -306,18 +274,15 @@ namespace Sdx.Graphics
          * nine patch, minus the top and bottom height. This value is only used for computing the link #GetTotalHeight() default
          * total height. 
          */
-        public void SetMiddleHeight(float middleHeight) 
-        { 
+        public void setMiddleHeight(float middleHeight) { 
             this.middleHeight = middleHeight;
         }
 
-        public float GetTotalWidth()
-        {
+        public float getTotalWidth() {
             return leftWidth + middleWidth + rightWidth;
         }
 
-        public float GetTotalHeight()
-        {
+        public float getTotalHeight() {
             return topHeight + middleHeight + bottomHeight;
         }
 
@@ -325,8 +290,7 @@ namespace Sdx.Graphics
          * Set the padding for content inside this ninepatch. By default the padding is set to match the exterior of the ninepatch, so
          * the content should fit exactly within the middle patch. 
          */
-        public void SetPadding(float left, float right, float top, float bottom)
-        { 
+        public void setPadding(float left, float right, float top, float bottom) { 
             this.padLeft = left;
             this.padRight = right;
             this.padTop = top;
@@ -336,76 +300,67 @@ namespace Sdx.Graphics
         /** 
          * Returns the left padding if set, else returns link #GetLeftWidth(). 
          */
-        public float GetPadLeft()
-        {
-            if (padLeft == -1) return GetLeftWidth();
+        public float getPadLeft() {
+            if (padLeft == -1) return getLeftWidth();
             return padLeft;
         }
 
         /** 
          * See link #setPadding(float, float, float, float) 
          */
-        public void SetPadLeft(float left)
-        { 
+        public void setPadLeft(float left) { 
             this.padLeft = left;
         }
 
         /** 
          * Returns the right padding if set, else returns link #GetRightWidth(). 
          */
-        public float GetPadRight()
-        {
-            if (padRight == -1) return GetRightWidth();
+        public float getPadRight() {
+            if (padRight == -1) return getRightWidth();
             return padRight;
         }
 
         /** 
          * See link #setPadding(float, float, float, float) 
          */
-        public void SetPadRight(float right)
-        { 
+        public void setPadRight(float right) { 
             this.padRight = right;
         }
 
         /** 
          * Returns the top padding if set, else returns link #GetTopHeight(). 
          */
-        public float GetPadTop()
-        {
-            if (padTop == -1) return GetTopHeight();
+        public float getPadTop() {
+            if (padTop == -1) return getTopHeight();
             return padTop;
         }
 
         /** 
          * See link #setPadding(float, float, float, float) 
          */
-        public void SetPadTop(float top)
-        { 
+        public void setPadTop(float top) { 
             this.padTop = top;
         }
 
         /** 
          * Returns the bottom padding if set, else returns link #GetBottomHeight(). 
          */
-        public float GetPadBottom()
-        {
-            if (padBottom == -1) return GetBottomHeight();
+        public float getPadBottom() {
+            if (padBottom == -1) return getBottomHeight();
             return padBottom;
         }
 
         /** 
          * See link #setPadding(float, float, float, float) 
          */
-        public void SetPadBottom(float bottom)
-        { 
+        public void setPadBottom(float bottom) { 
             this.padBottom = bottom;
         }
 
         /** 
          * Multiplies the top/left/bottom/right sizes and padding by the specified amount. 
          */
-        public void Scale(float scaleX, float scaleY) 
-        { 
+        public void scale(float scaleX, float scaleY) { 
             leftWidth *= scaleX;
             rightWidth *= scaleX;
             topHeight *= scaleY;

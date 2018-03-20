@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace  Sdx.Math 
-{
+namespace  Sdx.Math {
     /**
      * A TweenManager updates all your tweens and timelines at once.
      * Its main interest is that it handles the tween/timeline life-cycles for you,
@@ -27,8 +26,7 @@ namespace  Sdx.Math
      * @see Tween
      * @see Timeline
      */
-    public class TweenManager : Object
-    {
+    public class TweenManager : Object {
         // -------------------------------------------------------------------------
         // Static API
         // -------------------------------------------------------------------------
@@ -41,8 +39,7 @@ namespace  Sdx.Math
          * Therefore, if you update a manager backwards, the tweens or timelines
          * will be played again, even if they were finished.
          */
-        public static void SetAutoRemove(Tween object, bool value) 
-        {
+        public static void setAutoRemove(Tween object, bool value) {
 		    object.isAutoRemoveEnabled = value;
         }
             
@@ -52,8 +49,7 @@ namespace  Sdx.Math
          * is not enabled, add a tween or timeline to any manager won't start it
          * automatically, and you'll need to call .start() manually on your object.
          */
-        public static void SetAutoStart(Tween object, bool value) 
-        {
+        public static void setAutoStart(Tween object, bool value) {
             object.isAutoStartEnabled = value;
         }
 
@@ -65,8 +61,8 @@ namespace  Sdx.Math
 
         public TweenManager()
         {
-            Interpolation.Initialize();
-            Tween.Init();
+            Interpolation.initialize();
+            Tween.init();
             objects = new GenericArray<Tweenbase>(20);
         }
 
@@ -75,12 +71,10 @@ namespace  Sdx.Math
          *
          * @return The manager, for instruction chaining.
          */
-        public TweenManager Add(Tweenbase object)
-        {
+        public TweenManager add(Tweenbase object) {
             objects.Add(object);
-            if (object.isAutoStartEnabled) 
-            {
-                object.Start();
+            if (object.isAutoStartEnabled) {
+                object.start();
             }
             return this;
         }
@@ -89,12 +83,10 @@ namespace  Sdx.Math
          * Returns true if the manager contains any valid interpolation associated
          * to the given target object and to the given tween type.
          */
-        public bool ContainsTarget(void* target, int tweenType=-1) 
-        {
-            for (int i=0, n=objects.length; i<n; i++) 
-            {
-                Tweenbase obj = objects.Get(i);
-                if (obj.ContainsTarget(target, tweenType)) return true;
+        public bool containsTarget(void* target, int tweenType=-1) {
+            for (int i=0, n=objects.length; i<n; i++) {
+                Tweenbase obj = objects[i];
+                if (obj.containsTarget(target, tweenType)) return true;
             }
             return false;
         }
@@ -102,12 +94,10 @@ namespace  Sdx.Math
         /**
          * Kills every managed tweens and timelines.
          */
-        public void KillAll() 
-        {
-            for (int i=0, n=objects.length; i<n; i++) 
-            {
-                var obj = objects.Get(i);
-                obj.Kill();
+        public void killAll() {
+            for (int i=0, n=objects.length; i<n; i++) {
+                var obj = objects[i];
+                obj.kill();
             }
         }
 
@@ -116,11 +106,10 @@ namespace  Sdx.Math
          * also kill every timelines containing a tween associated to the given
          * target and tween type.
          */
-        public void KillTarget(void* target, int tweenType=-1) {
-            for (int i=0, n=objects.length; i<n; i++) 
-            {
-                var obj = objects.Get(i);
-                obj.KillTarget(target, tweenType);
+        public void killTarget(void* target, int tweenType=-1) {
+            for (int i=0, n=objects.length; i<n; i++) {
+                var obj = objects[i];
+                obj.killTarget(target, tweenType);
             }
         }
 
@@ -128,16 +117,14 @@ namespace  Sdx.Math
         /**
          * Pauses the manager. Further update calls won't have any effect.
          */
-        public void Pause()
-        {
+        public void pause() {
             isPaused = true;
         }
 
         /**
          * Resumes the manager, if paused.
          */
-        public void Resume()
-        {
+        public void resume() {
             isPaused = false;
         }
 
@@ -152,12 +139,11 @@ namespace  Sdx.Math
          * tweaking this delta time. Multiply it by -1 to play the animation
          * backward, or by 0.5 to play it twice slower than its normal speed.
          */
-        public void Update(float delta)
-        {
+        public void update(float delta) {
             if (objects.length == 0) return;
 
             if (!isPaused)
-                objects.ForEach(it => it.Update(delta));
+                objects.ForEach(it => it.update(delta));
 
         }
 
@@ -168,8 +154,7 @@ namespace  Sdx.Math
          * 
          * To get the count of running tweens, see {@link GetRunningTweensCount}.
          */
-        public int Size() 
-        {
+        public int size() {
             return objects.length;
         }
 
@@ -179,8 +164,7 @@ namespace  Sdx.Math
          * 
          * ''Provided for debug purpose only.''
          */
-        public int GetRunningTweensCount() 
-        {
+        public int getRunningTweensCount() {
             return objects.length;
         }
         // -------------------------------------------------------------------------

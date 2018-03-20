@@ -14,22 +14,19 @@
  * limitations under the License.
  ******************************************************************************/
 using Sdx.Math;
-namespace Sdx.Graphics 
-{
+namespace Sdx.Graphics {
 
 	/**
 	 * base Sprite
 	 */
-	public class Sprite : Object 
-	{
-		public enum Kind 
-		{
+	public class Sprite : Object {
+		public enum Kind {
 			AnimatedSprite, TextureSprite, AtlasSprite, 
 			NineSliceSprite, CompositeSprite, TextSprite
 		}
 		public static int uniqueId = 0;
 
-		public Class* klass = Class.Register("Sdx.Graphics.Sprite");
+		public Class* klass = Class.register("Sdx.Graphics.Sprite");
 		public Kind kind;
 		public int id = ++uniqueId;
 		public SDL.Video.Texture texture;
@@ -59,8 +56,7 @@ namespace Sdx.Graphics
 		//  	print("Sprite %08x\n", (uint32)h);
 		//  }
 
-		public class AnimatedSprite : Sprite 
-		{
+		public class AnimatedSprite : Sprite {
 			/**
 			 * Animated Sprite
 			 * 
@@ -70,23 +66,21 @@ namespace Sdx.Graphics
 			 * @param width count of sprites horizontally on sheet
 			 * @param height count of sprites vertially on sheet
 			 */
-			public AnimatedSprite(string path, int width, int height) 
-			{
-				index = Surface.CachedSurface.IndexOfPath(path);
+			public AnimatedSprite(string path, int width, int height) {
+				index = Surface.CachedSurface.indexOfPath(path);
 				this.height = height;
 				this.width = width;
 				this.center = { width / 2, height / 2 };
 				this.path = path;
 				this.kind = Kind.AnimatedSprite;
-				SetFrame(0);
+				setFrame(0);
 			}
 			/**
 			 * setFrame
 			 * 
 			 * @param frame index of frame to draw
 			 */
-			public void SetFrame(int frame) 
-			{
+			public void setFrame(int frame) {
 				if (frame == this.frame) return;
 				this.frame = frame;
 				var rmask = (uint32)0x000000ff; 
@@ -106,17 +100,15 @@ namespace Sdx.Graphics
 
 		}
 
-		public class TextureSprite : Sprite 
-		{
+		public class TextureSprite : Sprite {
 			/**
 			 * TextureSprite
 			 * 
 			 * Simple sprite, 1 image per file
 			 * @param path to single surface
 			 */
-			public TextureSprite(string path) 
-			{
-				var index = Surface.CachedSurface.IndexOfPath(path);
+			public TextureSprite(string path) {
+				var index = Surface.CachedSurface.indexOfPath(path);
 				texture = SDL.Video.Texture.CreateFromSurface(renderer, Surface.CachedSurface.cache[index].surface);
 				if (texture == null) throw new SdlException.UnableToLoadTexture(path);
 				texture.SetBlendMode(SDL.Video.BlendMode.BLEND);
@@ -128,19 +120,17 @@ namespace Sdx.Graphics
 			}
 		}
 		
-		public class AtlasSprite : Sprite 
-		{
+		public class AtlasSprite : Sprite {
 			/**
 			 * AtlasSprite
 			 * 
 			 * @param region to load sprite from
 			 * 
 			 */
-			public AtlasSprite(AtlasRegion region) 
-			{
+			public AtlasSprite(AtlasRegion region) {
 
 				var path = region.texture.path;
-				var index = Surface.CachedSurface.IndexOfPath(region.texture.path);
+				var index = Surface.CachedSurface.indexOfPath(region.texture.path);
 				var rmask = (uint32)0x000000ff; 
 				var gmask = (uint32)0x0000ff00;
 				var bmask = (uint32)0x00ff0000;
@@ -160,8 +150,7 @@ namespace Sdx.Graphics
 			}
 		}
 
-		public class CompositeSprite : Sprite 
-		{
+		public class CompositeSprite : Sprite {
 			/**
 			 * CompositeSprite
 			 * 
@@ -171,23 +160,20 @@ namespace Sdx.Graphics
 			 * @param y offset in pixels
 			 * 
 			 */
-			public CompositeSprite(string path, Compositor builder, int x = 0, int y = 0) 
-			{
+			public CompositeSprite(string path, Compositor builder, int x = 0, int y = 0) {
 				var h = 0;
 				var w = 0;
-				foreach (var segment in builder(x, y)) 
-				{
+				foreach (var segment in builder(x, y)) {
 					if (segment.dest.h > h) h = (int)segment.dest.h;
 					if (segment.dest.w > w) w = (int)segment.dest.w;
 				}
-				var index = Surface.CachedSurface.IndexOfPath(path);
+				var index = Surface.CachedSurface.indexOfPath(path);
 				var rmask = (uint32)0x000000ff; 
 				var gmask = (uint32)0x0000ff00;
 				var bmask = (uint32)0x00ff0000;
 				var amask = (uint32)0xff000000;
 				var surface = new SDL.Video.Surface.LegacyRgb(0, h, w, 32, rmask, gmask, bmask, amask);
-				foreach (var segment in builder(h/2, w/2)) 
-				{
+				foreach (var segment in builder(h/2, w/2)) {
 					Surface.CachedSurface.cache[index].surface.BlitScaled(segment.source, surface, segment.dest);
 				}
 				texture = SDL.Video.Texture.CreateFromSurface(renderer, surface);
@@ -199,8 +185,7 @@ namespace Sdx.Graphics
 			}
 		}
 
-		public class NineSliceSprite : Sprite 
-		{
+		public class NineSliceSprite : Sprite {
 			/**
 			 * CompositeSprite
 			 * 
@@ -209,10 +194,9 @@ namespace Sdx.Graphics
 			 * @param height in pixels
 			 * 
 			 */
-			public NineSliceSprite(NinePatch patch, int width = 100, int height = 100) 
-			{
-				var w = (int)patch.GetTotalWidth()+width;
-				var h = (int)patch.GetTotalHeight()+height;
+			public NineSliceSprite(NinePatch patch, int width = 100, int height = 100) {
+				var w = (int)patch.getTotalWidth()+width;
+				var h = (int)patch.getTotalHeight()+height;
 
 				var rmask = (uint32)0x000000ff; 
 				var gmask = (uint32)0x0000ff00;
@@ -245,8 +229,7 @@ namespace Sdx.Graphics
 				dest[8].y += (int)offsetHeight;
 
 				i = 0;
-				foreach (var segment in patch.slice) 
-				{
+				foreach (var segment in patch.slice) {
 					patch.texture.surface.BlitScaled(segment.source, surface, dest[i++]);
 				}
 				texture = SDL.Video.Texture.CreateFromSurface(renderer, surface);
@@ -258,8 +241,7 @@ namespace Sdx.Graphics
 			}
 		}
 
-		public class UISprite : Sprite 
-		{
+		public class UISprite : Sprite {
 			/**
 			 * CompositeSprite
 			 * 
@@ -271,10 +253,9 @@ namespace Sdx.Graphics
 			 * @param height in pixels
 			 * 
 			 */
-			public UISprite(NinePatch patch, string text, Sdx.Font font, SDL.Video.Color color, int width = 50, int height = 20) 
-			{
+			public UISprite(NinePatch patch, string text, Sdx.Font font, SDL.Video.Color color, int width = 50, int height = 20) {
 
-				var textSurface = font.Render(text, color);
+				var textSurface = font.render(text, color);
 				
 				width = (int)GLib.Math.fmax(width, textSurface.w);
 				height = (int)GLib.Math.fmax(height, textSurface.h);
@@ -282,8 +263,8 @@ namespace Sdx.Graphics
 				//  width = (int)textSurface.w;
 				//  height = (int)textSurface.h;
 
-				var w = (int)patch.GetTotalWidth()+width;
-				var h = (int)patch.GetTotalHeight()+height;
+				var w = (int)patch.getTotalWidth()+width;
+				var h = (int)patch.getTotalHeight()+height;
 				var rmask = (uint32)0x000000ff; 
 				var gmask = (uint32)0x0000ff00;
 				var bmask = (uint32)0x00ff0000;
@@ -293,8 +274,7 @@ namespace Sdx.Graphics
 				var i = 0;
 
 				for (i=0; i<9; i++) 
-					dest[i] = 
-						{ 
+					dest[i] = { 
 							patch.slice[i].dest.x, 
 							patch.slice[i].dest.y, 
 							patch.slice[i].dest.w, 
@@ -321,8 +301,7 @@ namespace Sdx.Graphics
 				dest[8].y += (int)offsetHeight;
 
 				i = 0;
-				foreach (var segment in patch.slice) 
-				{
+				foreach (var segment in patch.slice) {
 					patch.texture.surface.BlitScaled(segment.source, surface, dest[i++]);
 				}
 				textSurface.BlitScaled(
@@ -342,8 +321,7 @@ namespace Sdx.Graphics
 			}
 		}
 
-		public class TextSprite : Sprite 
-		{
+		public class TextSprite : Sprite {
 			/**
 			 * TextSprite
 			 * 
@@ -353,9 +331,8 @@ namespace Sdx.Graphics
 			 * @param bg background color, null = transparent
 			 * 
 			 */
-			public TextSprite(string text, Sdx.Font font, SDL.Video.Color fg, SDL.Video.Color? bg = null) 
-			{
-				SetText(text, font, fg, bg);
+			public TextSprite(string text, Sdx.Font font, SDL.Video.Color fg, SDL.Video.Color? bg = null) {
+				setText(text, font, fg, bg);
 				centered = false;
 				center = { 0, 0 };
 				kind = Kind.TextSprite;
@@ -369,9 +346,8 @@ namespace Sdx.Graphics
 			 * @param fg foregound text color 
 			 * @param bg background color, null = transparent
 			 */
-			public void SetText(string text, Sdx.Font font, SDL.Video.Color fg, SDL.Video.Color? bg = null) 
-			{
-				var surface = font.Render(text, fg, bg);
+			public void setText(string text, Sdx.Font font, SDL.Video.Color fg, SDL.Video.Color? bg = null) {
+				var surface = font.render(text, fg, bg);
 				texture = SDL.Video.Texture.CreateFromSurface(renderer, surface);
 				texture.SetBlendMode(SDL.Video.BlendMode.BLEND);
 				width = surface.w;
@@ -388,8 +364,7 @@ namespace Sdx.Graphics
 		 * @param y display coordinate
 		 * @param clip optional clipping rectangle
 		 */
-		public void Render(int x, int y, SDL.Video.Rect? clip = null) 
-		{
+		public void Render(int x, int y, SDL.Video.Rect? clip = null) {
 			/* do clipping? */
 			var w = (int)((clip == null ? width : clip.w) * scale.x);
 			var h = (int)((clip == null ? height : clip.h) * scale.y);
@@ -406,31 +381,27 @@ namespace Sdx.Graphics
 			renderer.CopyEx(texture, clip, { x, y, w, h }, angle, center, flip);
 		}
 
-		public void Copy(SDL.Video.Rect? src = null, SDL.Video.Rect? dest = null) 
-		{
+		public void copy(SDL.Video.Rect? src = null, SDL.Video.Rect? dest = null) {
 			renderer.Copy(texture, src, dest);
 		}
 
-		public Sprite SetColor(SDL.Video.Color color)
-		{
+		public Sprite setColor(SDL.Video.Color color) {
 			this.color = color;
 			return this;
 		}
-		public Sprite SetScale(float x, float y) 
-		{
+
+		public Sprite setScale(float x, float y) {
 			this.scale = { x, y };
 			return this;
 		}
 
-		public Sprite SetPosition(int x, int y) 
-		{
+		public Sprite setPosition(int x, int y) {
 			this.x = x;
 			this.y = y;
 			return this;
 		}
 
-		public Sprite SetCentered(bool value) 
-		{
+		public Sprite setCentered(bool value) {
 			centered = value;
 			if (centered)
 				center = { width / 2, height / 2 };

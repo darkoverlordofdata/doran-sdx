@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx.Utils 
-{
+namespace Sdx.Utils {
 
     /**
      * Simple Json Parser
@@ -23,8 +22,7 @@ namespace Sdx.Utils
      * 
      * by [[Crockford]] [[https://github.com/douglascrockford/JSON-js]]
      */
-    public errordomain JsonException 
-    {
+    public errordomain JsonException {
         SyntaxError,
         UnexpectedCharacter,
         InvalidString,
@@ -33,8 +31,7 @@ namespace Sdx.Utils
         DuplicateKey
     }
 
-    public enum JsType 
-    {
+    public enum JsType {
         JS_INVALID,
         JS_BOOLEAN,
         JS_NUMBER,
@@ -45,8 +42,7 @@ namespace Sdx.Utils
 
     public delegate JsVariant JsDelegate(JsVariant holder, string key, JsVariant value);
 
-    public class Json : Object 
-    {
+    public class Json : Object {
 
         public static const string HEX_DIGIT = "0123456789abcdef";
         public static const string escape0 = "\"\\/bfnrt";
@@ -57,21 +53,18 @@ namespace Sdx.Utils
         private int at;
         private char ch;
         private string text;
-        private JsDelegate Replacer;
+        private JsDelegate _replacer;
 
 
-        public Json(JsDelegate Replacer = null) 
-        {
-            this.Replacer = Replacer;
+        public Json(JsDelegate replacer = null) {
+            _replacer = replacer;
         }
 
-        public static JsVariant Parse(string source) 
-        {
-            return new Json().ParseJson(source);
+        public static JsVariant parse(string source) {
+            return new Json().parseJson(source);
         }
 
-        public static string Stringify(JsVariant value, JsDelegate Replacer = null, string space = "") 
-        {
+        public static string stringify(JsVariant value, JsDelegate replacer = null, string space = "") {
             // The stringify method takes a value and an optional Replacer, and an optional
             // space parameter, and returns a JSON text. The Replacer can be a function
             // that can replace values, or an array of strings that will select the keys.
@@ -83,18 +76,15 @@ namespace Sdx.Utils
 
             var holder = new JsVariant(JsType.JS_OBJECT);
             holder.object.Set("", value);
-            return new Json(Replacer).Str("", holder);
+            return new Json(replacer).str("", holder);
         }
 
-        public string Quote(string str) 
-        {
+        public string quote(string str) {
             return "\"" + str + "\"";
         }
 
-        public JsVariant GetItem(JsVariant holder, string key) 
-        {
-            switch (holder.type) 
-            {
+        public JsVariant getItem(JsVariant holder, string key) {
+            switch (holder.type) {
                 case JsType.JS_ARRAY:
                     return holder.array.Item(int.Parse(key)).data;
                 case JsType.JS_OBJECT:
@@ -103,24 +93,22 @@ namespace Sdx.Utils
                     return null;
             }
         }
-        public string Str(string key, JsVariant holder) 
-        {
+
+        public string str(string key, JsVariant holder) {
             // Produce a string from holder[key].
 
             var length = 0;
             var mind = gap;
-            JsVariant value = GetItem(holder, key);
+            JsVariant value = getItem(holder, key);
 
-            if (Replacer != null) 
-            {
-                value = Replacer(holder, key, value);
+            if (_replacer != null) {
+                value = _replacer(holder, key, value);
             }
 
-            switch (value.type) 
-            {
+            switch (value.type) {
 
                 case JsType.JS_STRING:
-                    return Quote(value.string);
+                    return quote(value.string);
 
                 case JsType.JS_NUMBER:
                     return value.number.ToString(); 
@@ -136,24 +124,18 @@ namespace Sdx.Utils
 
                     // iterate through all of the keys in the object.
                     var keys = value.object.GetKeysAsArray();
-                    for (var i = 0; i < keys.length; i++) 
-                    {
+                    for (var i = 0; i < keys.length; i++) {
                         var k = keys[i];
-                        partial[i] = Quote(k) + (gap.length>0 ? ": " : ":") + Str(k, value);
+                        partial[i] = quote(k) + (gap.length>0 ? ": " : ":") + str(k, value);
                     }
                     // Join all of the member texts together, separated with commas,
                     // and wrap them in braces.
                     var v = "";
-                    if (partial.length == 0) 
-                    {
+                    if (partial.length == 0) {
                         v =  "{}";
-                    } 
-                    else if (gap.length > 0) 
-                    {
+                    } else if (gap.length > 0) {
                         v = "{\n" + gap + string.Joinv(",\n" + gap, partial) + "\n" + mind + "}";
-                    } 
-                    else 
-                    {
+                    } else {
                         v = "{" + string.Joinv(",", partial) + "}";
                     }
                     gap = mind;
@@ -167,24 +149,18 @@ namespace Sdx.Utils
                     // The value is an array. Stringify every element                    
                     length = (int)value.array.Length();
                     var partial = new string[length];
-                    for (var i = 0; i < length; i++) 
-                    {
-                        partial[i] = Str(i.ToString(), value);
+                    for (var i = 0; i < length; i++) {
+                        partial[i] = str(i.ToString(), value);
                     }
                     // Join all of the elements together, separated with commas, and wrap them in
                     // brackets.
 
                     var v = "";
-                    if (partial.length == 0) 
-                    {
+                    if (partial.length == 0) {
                         v =  "[]";
-                    } 
-                    else if (gap.length > 0) 
-                    {
+                    } else if (gap.length > 0) {
                         v = "[\n" + gap + string.Joinv(",\n" + gap, partial) + "\n" + mind + "]";
-                    } 
-                    else 
-                    {
+                    } else {
                         v = "[" + string.Joinv(",", partial) + "]";
                     }
                     gap = mind;
@@ -193,22 +169,20 @@ namespace Sdx.Utils
             return "";
         }
 
-        public JsVariant ParseJson(string source) 
-        {
+        public JsVariant parseJson(string source) {
 
             text = source;
             at = 0;
             ch = ' ';
-            var result = GetValue();
-            SkipWhite();
-            if (ch != 0) 
-            {
+            var result = getValue();
+            skipWhite();
+            if (ch != 0) {
                 throw new JsonException.SyntaxError("");
             }
             return result;
         }
 
-        public char Next(char? c=null) 
+        public char next(char? c=null) 
         {
             // If a c parameter is provided, verify that it matches the current character.
             if (c != null && c != ch) 
@@ -222,74 +196,64 @@ namespace Sdx.Utils
             return ch;
         }
 
-        public JsVariant GetValue() 
+        public JsVariant getValue() 
         {
 
             // Parse a JSON value. It could be an object, an array, a string, a number,
             // or a word.
 
-            SkipWhite();
-            switch (ch) 
-            {
+            skipWhite();
+            switch (ch) {
                 case '{':
-                    return GetObject();
+                    return getObject();
                 case '[':
-                    return GetArray();
+                    return getArray();
                 case '\"':
-                    return GetString();
+                    return getString();
                 case '-':
-                    return GetNumber();
+                    return getNumber();
                 default:
                     return (ch >= '0' && ch <= '9')
-                        ? GetNumber()
-                        : GetWord();
+                        ? getNumber()
+                        : getWord();
             }
         }
 
-        public JsVariant GetNumber() 
-        {
+        public JsVariant getNumber() {
             // Parse a number value.
             var string = "";
 
-            if (ch == '-') 
-            {
+            if (ch == '-') {
                 string = "-";
-                Next('-');
+                next('-');
             }
 
-            while (ch >= '0' && ch <= '9') 
-            {
+            while (ch >= '0' && ch <= '9') {
                 string += ch.ToString();
-                Next();
+                next();
             }
-            if (ch == '.') 
-            {
+            if (ch == '.') {
                 string += ".";
-                while (Next() != 0 && ch >= '0' && ch <= '9') 
-                {
+                while (next() != 0 && ch >= '0' && ch <= '9') {
                     string += ch.ToString();
                 }
             }
-            if (ch == 'e' || ch == 'E') 
-            {
+            if (ch == 'e' || ch == 'E') {
                 string += ch.ToString();
-                Next();
-                if (ch == '-' || ch == '+') 
-                {
+                next();
+                if (ch == '-' || ch == '+') {
                     string += ch.ToString();
-                    Next();
+                    next();
                 }
-                while (ch >= '0' && ch <= '9') 
-                {
+                while (ch >= '0' && ch <= '9') {
                     string += ch.ToString();
-                    Next();
+                    next();
                 }
             }
             return JsVariant.Number((double)double.Parse(string));
         }
 
-        public JsVariant GetString() 
-        {
+        public JsVariant getString() {
             // Parse a string value.
             var hex = 0;
             var i = 0;
@@ -297,39 +261,28 @@ namespace Sdx.Utils
             var uffff = 0;
             // When parsing for string values, we must look for " and \ characters.
 
-            if (ch == '\"') 
-            {
-                while (Next() != 0) 
-                {
-                    if (ch == '\"') 
-                    {
-                        Next();
+            if (ch == '\"') {
+                while (next() != 0) {
+                    if (ch == '\"') {
+                        next();
                         return JsVariant.String(string);
                     }
-                    if (ch == '\\') 
-                    {
-                        Next();
-                        if (ch == 'u') 
-                        {
+                    if (ch == '\\') {
+                        next();
+                        if (ch == 'u') {
                             uffff = 0;
-                            for (i = 0; i < 4; i += 1) 
-                            {
-                                hex = HEX_DIGIT.IndexOf(Next().ToString().down());
+                            for (i = 0; i < 4; i += 1) {
+                                hex = HEX_DIGIT.IndexOf(next().ToString().down());
                                 if (hex < 0) break;
                                 uffff = uffff * 16 + hex;
                             }
                             string += ((char)uffff).ToString();
-                        } 
-                        else if ((i = escape0.IndexOf(ch.ToString())) >= 0) 
-                        {
+                        } else if ((i = escape0.IndexOf(ch.ToString())) >= 0) {
                             string += escape1[i];
-                        } else 
-                        {
+                        } else {
                             break;
                         }
-                    } 
-                    else 
-                    {
+                    } else {
                         string += ch.ToString();
                     }
                 }
@@ -338,109 +291,94 @@ namespace Sdx.Utils
         }
 
 
-        public void SkipWhite() 
-        {
+        public void skipWhite() {
 
             // Skip whitespace.
 
-            while (ch != 0 && ch <= ' ') 
-            {
-                Next();
+            while (ch != 0 && ch <= ' ') {
+                next();
             }
         }
 
-        public JsVariant GetWord() 
-        {
+        public JsVariant getWord() {
 
-            switch (ch) 
-            {
+            switch (ch) {
                 case 't':
-                    Next('t');
-                    Next('r');
-                    Next('u');
-                    Next('e');
+                    next('t');
+                    next('r');
+                    next('u');
+                    next('e');
                     return JsVariant.Boolean(true);
                 case 'f':
-                    Next('f');
-                    Next('a');
-                    Next('l');
-                    Next('s');
-                    Next('e');
+                    next('f');
+                    next('a');
+                    next('l');
+                    next('s');
+                    next('e');
                     return JsVariant.Boolean(false);
                 case 'n':
-                    Next('n');
-                    Next('u');
-                    Next('l');
-                    Next('l');
+                    next('n');
+                    next('u');
+                    next('l');
+                    next('l');
                     return new JsVariant(JsType.JS_OBJECT, true);
             }
             throw new JsonException.UnexpectedCharacter("Unexpected '%s'", ch.ToString());
 
         }
 
-        public JsVariant GetArray() 
-        {
+        public JsVariant getArray() {
             // Parse an array value.
             var result = new JsVariant(JsType.JS_ARRAY);
 
-            if (ch == '[') 
-            {
-                Next('[');
-                SkipWhite();
-                if (ch == ']') 
-                {
-                    Next(']');
+            if (ch == '[') {
+                next('[');
+                skipWhite();
+                if (ch == ']') {
+                    next(']');
                     return result;
                 }
-                while (ch != 0) 
-                {
-                    result.array.Add(GetValue());
-                    SkipWhite();
-                    if (ch == ']') 
-                    {
-                        Next(']');
+                while (ch != 0) {
+                    result.array.Add(getValue());
+                    skipWhite();
+                    if (ch == ']') {
+                        next(']');
                         return result;
                     }
-                    Next(',');
-                    SkipWhite();
+                    next(',');
+                    skipWhite();
                 }
             }
             throw new JsonException.InvalidArray("");
         }
 
-        public JsVariant GetObject() 
-        {
+        public JsVariant getObject() {
             // Parse an object value.
             var key = "";
             var result = new JsVariant(JsType.JS_OBJECT);
 
-            if (ch == '{') 
-            {
-                Next('{');
-                SkipWhite();
-                if (ch == '}') 
-                {
-                    Next('}');
+            if (ch == '{') {
+                next('{');
+                skipWhite();
+                if (ch == '}') {
+                    next('}');
                     return result;
                 }
-                while (ch != 0) 
-                {
-                    key = GetString().string;
-                    SkipWhite();
-                    Next(':');
-                    if (result.object.Contains(key)) 
-                    {
+                while (ch != 0) {
+                    key = getString().string;
+                    skipWhite();
+                    next(':');
+                    if (result.object.Contains(key)) {
                         throw new JsonException.DuplicateKey("");
                     }
-                    result.object.Set(key, GetValue());
-                    SkipWhite();
-                    if (ch == '}') 
-                    {
-                        Next('}');
+                    result.object.Set(key, getValue());
+                    skipWhite();
+                    if (ch == '}') {
+                        next('}');
                         return result;
                     }
-                    Next(',');
-                    SkipWhite();
+                    next(',');
+                    skipWhite();
                 }
             }
             throw new JsonException.InvalidObject("");
@@ -454,8 +392,7 @@ namespace Sdx.Utils
      * Arrays are represented as List<JsVariant>
      * Objects are represented as HashTable<string, JsVariant>
      */
-    public class JsVariant : Object 
-    {
+    public class JsVariant : Object {
 
         public bool boolean;
         public double number;
@@ -465,31 +402,27 @@ namespace Sdx.Utils
 
         public JsType type;
 
-        public static JsVariant String(string value) 
-        {
+        public static JsVariant String(string value) {
             var it = new JsVariant(JsType.JS_STRING);
             it.string = value;
             return it;
         }
 
-        public static JsVariant Number(double value) 
-        {
+        public static JsVariant Number(double value) {
             var it = new JsVariant(JsType.JS_NUMBER);
             it.number = value;
             return it;
         }
-        public static JsVariant Boolean(bool value) 
-        {
+
+        public static JsVariant Boolean(bool value) {
             var it = new JsVariant(JsType.JS_BOOLEAN);
             it.boolean = value;
             return it;
         }
 
-        public JsVariant(JsType type, bool isNull = false) 
-        {
+        public JsVariant(JsType type, bool isNull = false) {
             this.type = type;
-            switch (type) 
-            {
+            switch (type) {
                 case JsType.JS_BOOLEAN:
                     boolean = false;
                     break;
@@ -511,13 +444,15 @@ namespace Sdx.Utils
             }
         }
 
-        public JsVariant At(int index) 
-        {
+        public JsVariant at(int index) {
             return array.Head.data;
         }
 
-        public JsVariant Member(string key) 
-        {
+        //  public JsVariant member(string key) {
+        //      return object.Get(key);
+        //  }
+
+        public JsVariant get(string key) {
             return object.Get(key);
         }
     }   

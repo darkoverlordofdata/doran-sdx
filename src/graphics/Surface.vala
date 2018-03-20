@@ -13,31 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx.Graphics 
-{
+namespace Sdx.Graphics {
 
 	/**
 	 * a reference counted wrapper for surface
 	 * 
 	 */
 	
-	public class Surface : Object 
-	{
+	public class Surface : Object {
 		public static int uniqueId = 0;
 		internal SDL.Video.Surface? surface;
 		private int id = ++uniqueId;
 		public string path;
 
-        public int width 
-		{
+        public int width {
             get { return surface.w; }
-        }
-        public int height 
-		{
+		}
+		
+        public int height {
             get { return surface.h; }
-        }
-		public SDL.Video.Surface GetSurface(string ext, SDL.RWops raw) 
-		{
+		}
+		
+		public SDL.Video.Surface getSurface(string ext, SDL.RWops raw) {
 			// warning : case statement fails here with default exception
 			if (ext == ".png") return SDLImage.LoadPNG(raw);
 			else if (ext == ".cur") return SDLImage.LoadCUR(raw);
@@ -63,32 +60,26 @@ namespace Sdx.Graphics
 		 * a locally owned/cached surface
 		 */
 
-		public class CachedSurface : Surface 
-		{
+		public class CachedSurface : Surface {
 			public static Sdx.Graphics.Surface[] cache;
-			public static void Initialize(int size) 
-			{
+			public static void initialize(int size) {
 				if (cache.length == 0) cache = new Sdx.Graphics.Surface[size];
 			}
 
-			public CachedSurface(Sdx.Files.FileHandle file) 
-			{
+			public CachedSurface(Sdx.Files.FileHandle file) {
 
-				var ext = file.GetExt();
-				var raw = file.GetRWops();
-				path = file.GetPath();
-				surface = GetSurface(ext, raw);
+				var ext = file.getExt();
+				var raw = file.getRWops();
+				path = file.getPath();
+				surface = getSurface(ext, raw);
 				surface.SetAlphaMod(0xff);
 			}
 
-			public static int IndexOfPath(string path) 
-			{
+			public static int indexOfPath(string path) {
 				if (cache.length == 0) cache = new Sdx.Graphics.Surface[10];//Pool.Count];
-				for (var i=0; i<cache.length; i++) 
-				{
-					if (cache[i] == null) 
-					{
-						cache[i] = new CachedSurface(Sdx.Files.Default(path));
+				for (var i=0; i<cache.length; i++) {
+					if (cache[i] == null) {
+						cache[i] = new CachedSurface(Sdx.Files.default(path));
 						return i;
 					}
 					if (cache[i].path == path) return i;
@@ -103,20 +94,18 @@ namespace Sdx.Graphics
 		 * a parent for TextureRegions
 		 * an externally owned/cached surface
 		 */
-		public class TextureSurface : Surface 
-		{
+		public class TextureSurface : Surface {
 
-			public TextureSurface(Sdx.Files.FileHandle file) 
-			{
-				path = file.GetPath();
-				var raw = file.GetRWops();
-				surface = GetSurface(file.GetExt(), raw);
+			public TextureSurface(Sdx.Files.FileHandle file) {
+				path = file.getPath();
+				var raw = file.getRWops();
+				surface = getSurface(file.getExt(), raw);
 				surface.SetAlphaMod(0xff);
 			}
 
 
-			public void SetFilter(int minFilter, int magFilter) {}
-			public void SetWrap(int u, int v) {}
+			public void setFilter(int minFilter, int magFilter) {}
+			public void setWrap(int u, int v) {}
 
 		}
 

@@ -110,8 +110,8 @@ namespace Sdx.Graphics
         public void Load(FileHandle fontFile, bool flip) {
             if (imagePaths != null) throw new SdlException.IllegalStateException("Already loaded.");
 
-            var json = Sdx.Utils.Json.Parse(fontFile.Read());
-            var padding = json.Member("font").Member("info").Member("padding").string.Split(",", 4);
+            var json = Sdx.Utils.Json.parse(fontFile.read());
+            var padding = json["font"]["info"]["padding"].string.Split(",", 4);
             if (padding.length != 4) throw new SdlException.RuntimeException("Invalid padding: %d.", padding.length);
             padTop = int.Parse(padding[0]);
             padRight = int.Parse(padding[1]);
@@ -119,34 +119,34 @@ namespace Sdx.Graphics
             padLeft = int.Parse(padding[3]);
             var padY = padTop + padBottom;
 
-            lineHeight = (int)json.Member("font").Member("common").Member("lineHeight").number;
-            var baseLine = (int)json.Member("font").Member("common").Member("base").number;
+            lineHeight = (int)json["font"]["common"]["lineHeight"].number;
+            var baseLine = (int)json["font"]["common"]["base"].number;
 
 
-            var pages = json.Member("font").Member("pages").object.GetKeysAsArray();
+            var pages = json["font"]["pages"].object.GetKeysAsArray();
             var pageCount = pages.length;
             imagePaths = new string[pageCount];
             // Read each page definition.
             for (var p = 0; p<pageCount; p++) {
-                var node = json.Member("font").Member("pages").Member(pages[p]);
-                var filename = node.Member("file").string;
-                imagePaths[p] = fontFile.GetParent().Child(filename).GetPath();
+                var node = json["font"]["pages"][pages[p]];
+                var filename = node["file"].string;
+                imagePaths[p] = fontFile.getParent().child(filename).getPath();
             }
 
             descent = 0;
-            foreach (var ch in json.Member("font").Member("chars").Member("char").array) {
+            foreach (var ch in json["font"]["chars"]["char"].array) {
                 var glyph = new Glyph();
-                    glyph.id = int.Parse(ch.Member("id").string);
-                    glyph.x = int.Parse(ch.Member("x").string);
-                    glyph.y = int.Parse(ch.Member("y").string);
-                    glyph.width = int.Parse(ch.Member("width").string);
-                    glyph.height = int.Parse(ch.Member("height").string);
-                    glyph.xoffset = int.Parse(ch.Member("xoffset").string);
+                    glyph.id = int.Parse(ch["id"].string);
+                    glyph.x = int.Parse(ch["x"].string);
+                    glyph.y = int.Parse(ch["y"].string);
+                    glyph.width = int.Parse(ch["width"].string);
+                    glyph.height = int.Parse(ch["height"].string);
+                    glyph.xoffset = int.Parse(ch["xoffset"].string);
                     if (flip)
-                        glyph.yoffset = int.Parse(ch.Member("yoffset").string);
+                        glyph.yoffset = int.Parse(ch["yoffset"].string);
                     else
-                        glyph.yoffset = -(glyph.height + int.Parse(ch.Member("yoffset").string));
-                    glyph.xadvance = int.Parse(ch.Member("xadvance").string);
+                        glyph.yoffset = -(glyph.height + int.Parse(ch["yoffset"].string));
+                    glyph.xadvance = int.Parse(ch["xadvance"].string);
 
                     if (glyph.width > 0 && glyph.height > 0) descent = GLib.Math.fminf(baseLine + glyph.yoffset, descent);
             }
@@ -213,8 +213,8 @@ namespace Sdx.Graphics
             var offsetY = 0;
             var u = region.u;
             var v = region.v;
-            var regionWidth = region.GetRegionWidth();
-            var regionHeight = region.GetRegionHeight();
+            var regionWidth = region.getRegionWidth();
+            var regionHeight = region.getRegionHeight();
             //  if (region is TextureAtlas.AtlasRegion) {
             //      // Compensate for whitespace stripped from left and top edges.
             //      var atlasRegion = (TextureAtlas.AtlasRegion)region;

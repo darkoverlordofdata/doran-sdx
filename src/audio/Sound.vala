@@ -24,10 +24,10 @@ namespace Sdx.Audio {
         public SDLMixer.Chunk chunk;
 
         public Sound(FileHandle file) {
-            chunk = new SDLMixer.Chunk.WAV_RW(file.GetRWops());
+            chunk = new SDLMixer.Chunk.WAV_RW(file.getRWops());
         }
 
-        public void Play(int loops = 0) {   
+        public void play(int loops = 0) {   
             SDLMixer.play(-1, chunk, loops);
         }
 #else
@@ -36,7 +36,7 @@ namespace Sdx.Audio {
         public Sound(FileHandle file) {
         }
 
-        public void Play(int loops = 0) {            
+        public void play(int loops = 0) {            
         }
 
 #endif

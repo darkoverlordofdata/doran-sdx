@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx.Ui 
-{
+namespace Sdx.Ui {
 	/**
 	 * base UI Component
 	 */
-	public class Component : Object 
-    {
-		public enum Kind 
-        {
+	public class Component : Object {
+		public enum Kind {
 			Window, Label, Button
         }
         public Kind kind;
@@ -48,32 +45,28 @@ namespace Sdx.Ui
         public delegate void ComponentOnMouseEnter(Component c, int x, int y);
         public delegate void ComponentStart();
         public delegate void ComponentStop();
-        public ComponentOnMouseClick OnMouseClick = (c, x, y) => {};
-        public ComponentOnMouseEnter OnMouseEnter = (c, x, y) => {};
-        public ComponentOnMouseLeave OnMouseLeave = (c, x, y) => {};
-        public ComponentStart Start = () => {};
-        public ComponentStart Stop = () => {};
+        public ComponentOnMouseClick onMouseClick = (c, x, y) => {};
+        public ComponentOnMouseEnter onMouseEnter = (c, x, y) => {};
+        public ComponentOnMouseLeave onMouseLeave = (c, x, y) => {};
+        public ComponentStart start = () => {};
+        public ComponentStart stop = () => {};
 
-        public int width 
-        {
+        public int width {
             get { return (int)bounds.w;}
         }
          
-        public int height 
-        {
+        public int height {
             get { return (int)bounds.h;}
         }
 
-        public Component(int x=0, int y=0, int w=0, int h=0) 
-        {
+        public Component(int x=0, int y=0, int w=0, int h=0) {
             bounds = { x, y, w, h };
             visible = false;
             focus = true;
             controls = new List<Component>();
         }
 
-        public void Render(int x = 0, int y = 0)
-        {
+        public void render(int x = 0, int y = 0) {
             x += bounds.x;
             y += bounds.y;
 
@@ -81,24 +74,22 @@ namespace Sdx.Ui
                 image[index].Render(x, y);
 
             foreach (var child in controls) {
-                child.Render(x, y);
+                child.render(x, y);
             }
         }
 
-        public void Add(Component child) 
-        {
+        public void add(Component child) {
             controls.Add(child);
             child.parent = this;
         }
 
-        public void Remove(Component child) 
-        {
+        public void remove(Component child) {
             controls.Remove(child);
-            child.Stop();
+            child.stop();
             child.parent = null;
         }
-        public Component SetPos(int x, int y)
-        {
+
+        public Component setPos(int x, int y) {
             bounds.x = x;
             bounds.y = y;
             return this;
@@ -114,7 +105,7 @@ namespace Sdx.Ui
             base(0, 0, w, h);
             kind = Kind.Window;
             this.name = name;
-            root = Sdx.Initialize(w, h, name);
+            root = Sdx.initialize(w, h, name);
             Sdx.ui = this;
         }
     }
@@ -122,49 +113,40 @@ namespace Sdx.Ui
     /**
      * A Button is like a label with handler
      */
-    public class Button : Component 
-    {
-        public Button()
-        {
+    public class Button : Component {
+        public Button() {
             base();
             kind = Kind.Button;
-            Start = EventStart;
-            Stop = EventStop;
-            Start();
+            start = EventStart;
+            stop = EventStop;
+            start();
         }
 
-        public void EventStop()
-        {
-            Sdx.RemoveInputProcessor(handler);
+        public void EventStop() {
+            Sdx.removeInputProcessor(handler);
             handler = null;
         }
 
-        public void EventStart()
-        {
-            Sdx.AddInputProcessor(handler = new InputProcessor()
+        public void EventStart() {
+            Sdx.addInputProcessor(handler = new InputProcessor()
 
-                .SetTouchDown((x, y, pointer, button) => 
-                {
-                    if (Test(x, y))
-                    {
-                        OnMouseClick(this, x, y);
+                .onTouchDown((x, y, pointer, button) => {
+                    if (Test(x, y)) {
+                        onMouseClick(this, x, y);
                         return true;
                     }
                     return false;
                 })
 
-                .SetTouchUp((x, y, pointer, button) => 
-                {
+                .onTouchUp((x, y, pointer, button) => {
                     return Test(x, y);
                 })
 
-                .SetTouchDragged((x, y, pointer) => 
-                {
+                .onTouchDragged((x, y, pointer) => {
                     return Test(x, y);
                 })
                 
-                .SetMouseMoved((x, y) => 
-                {
+                .onMouseMoved((x, y) => {
                     return Test(x, y);
                 })
             );
@@ -190,7 +172,7 @@ namespace Sdx.Ui
                 image = { 
                     new Sdx.Graphics.Sprite.TextSprite(this.text, this.font, foreground, background) 
                 };
-                image[0].SetCentered(false);
+                image[0].setCentered(false);
                 bounds.w = image[0].width;
                 bounds.h = image[0].height;
             }
@@ -205,11 +187,11 @@ namespace Sdx.Ui
                 foreground = fg;
                 index = 0;
                 image = { 
-                    new Sdx.Graphics.Sprite.UISprite(Sdx.atlas.CreatePatch(img), this.text, this.font, foreground, 100, 40),
-                    new Sdx.Graphics.Sprite.UISprite(Sdx.atlas.CreatePatch(alt), this.text, this.font, foreground, 100, 40) 
+                    new Sdx.Graphics.Sprite.UISprite(Sdx.atlas.createPatch(img), this.text, this.font, foreground, 100, 40),
+                    new Sdx.Graphics.Sprite.UISprite(Sdx.atlas.createPatch(alt), this.text, this.font, foreground, 100, 40) 
                 };
-                image[0].SetCentered(false);
-                image[1].SetCentered(false);
+                image[0].setCentered(false);
+                image[1].setCentered(false);
                 bounds.w = image[0].width;
                 bounds.h = image[0].height;
             }

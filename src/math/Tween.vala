@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace  Sdx.Math 
-{
+namespace  Sdx.Math {
     /**
      * Core class of the Tween Engine. A Tween is basically an interpolation
      * between two values of an object attribute. However, the main interest of a
@@ -79,14 +78,12 @@ namespace  Sdx.Math
      * @see Interpolation
      * @see Timeline
      */
-    public class Tween : Tweenbase
-    {
+    public class Tween : Tweenbase {
         // -------------------------------------------------------------------------
         // Static -- misc
         // -------------------------------------------------------------------------
 
-        public static void Init()
-        {
+        public static void init() {
             pool = new Stack<Tween>();
             registeredAccessors = new HashTable<void*,TweenAccessor>(null, null);
         }
@@ -100,8 +97,7 @@ namespace  Sdx.Math
          * Changes the limit for combined attributes. Defaults to 3 to reduce
          * memory footprint.
          */
-        public static void SetCombinedAttributesLimit(int limit) 
-        {
+        public static void setCombinedAttributesLimit(int limit) {
             combinedAttrsLimit = limit;
         }
 
@@ -110,8 +106,7 @@ namespace  Sdx.Math
          * Changes the limit of allowed waypoints for each tween. Defaults to 0 to
          * reduce memory footprint.
          */
-        public static void SetWaypointsLimit(int limit) 
-        {
+        public static void setWaypointsLimit(int limit) {
             waypointsLimit = limit;
         }
 
@@ -129,8 +124,7 @@ namespace  Sdx.Math
          * @param defaultAccessor The accessor that will be used to tween any
          * object of klass "someClass".x`
          */
-        public static void RegisterAccessor(void* someClass, TweenAccessor defaultAccessor)
-        {
+        public static void registerAccessor(void* someClass, TweenAccessor defaultAccessor) {
             registeredAccessors.Set(someClass, defaultAccessor);
         }
 
@@ -140,8 +134,7 @@ namespace  Sdx.Math
          *
          * @param someClass An object class.
          */
-        public static TweenAccessor GetRegisteredAccessor(void* someClass) 
-        {
+        public static TweenAccessor getRegisteredAccessor(void* someClass)  {
             return registeredAccessors.Get(someClass);
         }
 
@@ -177,11 +170,10 @@ namespace  Sdx.Math
          * @param duration The duration of the interpolation, in milliseconds.
          * @return The generated Tween.
          */
-        public static Tween To(void* target, int tweenType, float duration) 
-        {
-            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().Reset();
-            tween.Setup(target, tweenType, duration);
-            tween.Ease(Interpolation.quadInOut);
+        public static Tween to(void* target, int tweenType, float duration) {
+            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().reset();
+            tween.setup(target, tweenType, duration);
+            tween.ease(Interpolation.quadInOut);
             return tween;
         }
 
@@ -211,12 +203,11 @@ namespace  Sdx.Math
          * @param duration The duration of the interpolation, in milliseconds.
          * @return The generated Tween.
          */
-        public static Tween From(void* target, int tweenType, float duration) 
-        {
-            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().Reset();
-            tween.Setup(target, tweenType, duration);
-            tween.Ease(Interpolation.quadInOut);
-            tween.isFrom = true;
+        public static Tween from(void* target, int tweenType, float duration) {
+            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().reset();
+            tween.setup(target, tweenType, duration);
+            tween.ease(Interpolation.quadInOut);
+            tween._isFrom = true;
             return tween;
         }
 
@@ -245,11 +236,10 @@ namespace  Sdx.Math
          * @param tweenType The desired type of interpolation.
          * @return The generated Tween.
          */
-        public static Tween Set(void* target, int tweenType)
-        {
-            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().Reset();
-            tween.Setup(target, tweenType, 0);
-            tween.Ease(Interpolation.quadInOut);
+        public static Tween set(void* target, int tweenType) {
+            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().reset();
+            tween.setup(target, tweenType, 0);
+            tween.ease(Interpolation.quadInOut);
             return tween;
         }
 
@@ -273,12 +263,11 @@ namespace  Sdx.Math
          * @return The generated Tween.
          * @see Tweenbase.TweenCallback
          */
-        public static Tween Call(TweenCallbackOnEvent callback)
-        {
-            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().Reset();
-            tween.Setup(null, -1, 0);
-            tween.SetCallback(callback);
-		    tween.SetCallbackTriggers(TweenCallback.START);
+        public static Tween call(TweenCallbackOnEvent callback) {
+            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().reset();
+            tween.setup(null, -1, 0);
+            tween.setCallback(callback);
+		    tween.setCallbackTriggers(TweenCallback.START);
             return tween;
         }
 
@@ -291,33 +280,29 @@ namespace  Sdx.Math
          * @return The generated Tween.
          * @see Timeline
          */
-        public static Tween Mark()
-        {
-            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().Reset();
-            tween.Setup(null, -1, 0);
+        public static Tween mark() {
+            var tween = pool.IsEmpty() ? new Tween() : (Tween)pool.Pop().reset();
+            tween.setup(null, -1, 0);
             return tween;
         }
 
         // -------------------------------------------------------------------------
         // Setup
         // -------------------------------------------------------------------------
-        private Tween()
-        {
+        private Tween() {
             base();
-            kind = TweenKind.TWEEN;
-            Overrides();
-            Reset();
-
+            _kind = TweenKind.TWEEN;
+            overrides();
+            reset();
         }
 
-        protected void Setup(void* target, int tweenType, float duration)
-        {
+        protected void setup(void* target, int tweenType, float duration) {
 		    if (duration < 0) throw new Exception.RuntimeException("Duration can't be negative");
-            this.target = target;
+            _target = target;
             var tweenable = (Klass)target;
-            targetClass = tweenable.klass;
-            this.type = tweenType;
-            this.duration = duration;
+            _targetClass = tweenable.klass;
+            _type = tweenType;
+            _duration = duration;
         }
 
 
@@ -350,9 +335,8 @@ namespace  Sdx.Math
          * @see Interpolation
          * @see Interpolation
          */
-        public Tween Ease(Interpolation easeEquation)
-        {
-            equation = easeEquation;
+        public Tween ease(Interpolation easeEquation) {
+            _equation = easeEquation;
             return this;
         }
 
@@ -369,13 +353,11 @@ namespace  Sdx.Math
          * @param targetValues The target values of the interpolation.
          * @return The current tween, for chaining instructions.
          */
-        public Tween Target(float[] targetValues)
-        {
-            this.targetValues = new float[targetValues.length];
+        public Tween target(float[] targetValues) {
+            _targetValues = new float[targetValues.length];
 
-            for (var i=0; i < targetValues.length; i++) 
-            {
-                this.targetValues[i] = targetValues[i];
+            for (var i=0; i < targetValues.length; i++) {
+                _targetValues[i] = targetValues[i];
             }
             return this;
         }
@@ -392,14 +374,12 @@ namespace  Sdx.Math
          * @param targetValues The relative target values of the interpolation.
          * @return The current tween, for chaining instructions.
          */
-        public Tween TargetRelative(float[] targetValues)
-        {
-            isRelative = true;
-            this.targetValues = new float[targetValues.length];
+        public Tween targetRelative(float[] targetValues) {
+            _isRelative = true;
+            _targetValues = new float[targetValues.length];
 
-            for (var i=0; i < targetValues.length; i++) 
-            {
-                this.targetValues[i] = IsInitialized() ? targetValues[i] + startValues[i] : targetValues[i];
+            for (var i=0; i < targetValues.length; i++) {
+                _targetValues[i] = isInitialized() ? targetValues[i] + _startValues[i] : targetValues[i];
             }
             return this;
         }
@@ -407,132 +387,119 @@ namespace  Sdx.Math
         // -------------------------------------------------------------------------
         // Overrides
         // -------------------------------------------------------------------------
-        public void Overrides()
-        {
-            var Reset_ = Reset;
-            Reset = () => 
-            {
-                Reset_();
-                target = null;
-                targetClass = null;
-                accessor = null;
-                type = -1;
-                equation = null;
+        public void overrides() {
+            var reset_ = reset;
 
-                isFrom = isRelative = false;
-                combinedAttrsCnt = waypointsCnt = 0;
-                if (accessorBuffer.length != combinedAttrsLimit) {
-                    accessorBuffer = new float[combinedAttrsLimit];
+            reset = () => {
+                reset_();
+                _target = null;
+                _targetClass = null;
+                _accessor = null;
+                _type = -1;
+                _equation = null;
+
+                _isFrom = _isRelative = false;
+                _combinedAttrsCnt = _waypointsCnt = 0;
+                if (_accessorBuffer.length != combinedAttrsLimit) {
+                    _accessorBuffer = new float[combinedAttrsLimit];
                 }
                 return this;
             };
 
-            Build = () =>
-            {
-                if (target == null) return this;
-                accessor = registeredAccessors.Get(targetClass);
-                if (accessor != null) 
-                    combinedAttrsCnt = accessor.GetValues(target, type, ref accessorBuffer);
+            build = () => {
+                if (_target == null) return this;
+                _accessor = registeredAccessors.Get(_targetClass);
+                if (_accessor != null) 
+                    _combinedAttrsCnt = _accessor.getValues(_target, _type, ref _accessorBuffer);
                 else
                     throw new Exception.RuntimeException("No TweenAccessor was found for the target");
 
-                if (combinedAttrsCnt > combinedAttrsLimit) 
+                if (_combinedAttrsCnt > combinedAttrsLimit) 
                     throw new Exception.IllegalArgumentException("CombinedAttrsLimitReached");
                 return this;
             };
 
-            InitializeOverride = () => 
-            {
-                if (target == null) return;
+            initializeOverride = () => {
+                if (_target == null) return;
 
-                accessor.GetValues(target, type, ref startValues);
+                _accessor.getValues(_target, _type, ref _startValues);
 
-                for (int i=0; i<combinedAttrsCnt; i++) 
-                {
-                    targetValues[i] += isRelative ? startValues[i] : 0;
-                    if (isFrom) 
-                    {
-                        float tmp = startValues[i];
-                        startValues[i] = targetValues[i];
-                        targetValues[i] = tmp;
+                for (int i=0; i<_combinedAttrsCnt; i++) {
+                    _targetValues[i] += _isRelative ? _startValues[i] : 0;
+                    if (_isFrom) {
+                        float tmp = _startValues[i];
+                        _startValues[i] = _targetValues[i];
+                        _targetValues[i] = tmp;
                     }
                 }
             };
             
-            UpdateOverride = (step, lastStep, isIterationStep, delta) => 
-            {
-                if (target == null || equation == null) return;
+            updateOverride = (step, lastStep, isIterationStep, delta) => {
+                if (_target == null || _equation == null) return;
 
                 // Case iteration end has been reached
-                if (!isIterationStep && step > lastStep) 
-                {
-                    if (IsReverse(lastStep))
-                        accessor.SetValues(target, type, ref startValues);
+                if (!isIterationStep && step > lastStep) {
+                    if (isReverse(lastStep))
+                        _accessor.setValues(_target, _type, ref _startValues);
                     else
-                        accessor.SetValues(target, type, ref targetValues);
+                        _accessor.setValues(_target, _type, ref _targetValues);
                     return;
                 }
 
-                if (!isIterationStep && step < lastStep) 
-                {
-                    if (IsReverse(lastStep))
-                        accessor.SetValues(target, type, ref targetValues);
+                if (!isIterationStep && step < lastStep) {
+                    if (isReverse(lastStep))
+                        _accessor.setValues(_target, _type, ref _targetValues);
                     else
-                        accessor.SetValues(target, type, ref startValues);
+                        _accessor.setValues(_target, _type, ref _startValues);
                     return;
                 }
 
                 // Validation
                 assert(isIterationStep);
-                assert(GetCurrentTime() >= 0);
-                assert(GetCurrentTime() <= duration);
+                assert(getCurrentTime() >= 0);
+                assert(getCurrentTime() <= _duration);
 
                 // Case duration equals zero
 
-                if (duration < 0.00000000001f && delta > -0.00000000001f) 
-                {
-                    if (IsReverse(step))
-                        accessor.SetValues(target, type, ref targetValues);
+                if (_duration < 0.00000000001f && delta > -0.00000000001f) {
+                    if (isReverse(step))
+                        _accessor.setValues(_target, _type, ref _targetValues);
                     else
-                        accessor.SetValues(target, type, ref startValues);
+                        _accessor.setValues(_target, _type, ref _startValues);
                     return;
                 }
 
-                if (duration < 0.00000000001f && delta < 0.00000000001f) 
-                {
-                    if (IsReverse(step))
-                        accessor.SetValues(target, type, ref startValues);
+                if (_duration < 0.00000000001f && delta < 0.00000000001f) {
+                    if (isReverse(step))
+                        _accessor.setValues(_target, _type, ref _startValues);
                     else
-                        accessor.SetValues(target, type, ref targetValues);
+                        _accessor.setValues(_target, _type, ref _targetValues);
                     return;
                 }
-                float time = IsReverse(step) ? duration - GetCurrentTime() : GetCurrentTime();
-                float t = equation.Apply(time/duration);
-                for (int i=0; i<combinedAttrsCnt; i++) {
-                    accessorBuffer[i] = startValues[i] + t * (targetValues[i] - startValues[i]);
+                float time = isReverse(step) ? _duration - getCurrentTime() : getCurrentTime();
+                float t = _equation.apply(time/_duration);
+                for (int i=0; i<_combinedAttrsCnt; i++) {
+                    _accessorBuffer[i] = _startValues[i] + t * (_targetValues[i] - _startValues[i]);
                 }
-                accessor.SetValues(target, type, ref accessorBuffer);
+                _accessor.setValues(_target, _type, ref _accessorBuffer);
 
             };
             
-            ForceStartValues = () => 
-            {
-                if (target == null) return;
-                accessor.SetValues(target, type, ref startValues);
+            forceStartValues = () => {
+                if (_target == null) return;
+                _accessor.setValues(_target, _type, ref _startValues);
             };
 
-            ForceEndValues = () => 
-            {
-                if (target == null) return;
-                accessor.SetValues(target, type, ref targetValues);
+            forceEndValues = () => {
+                if (_target == null) return;
+                _accessor.setValues(_target, _type, ref _targetValues);
             };
 
 
-            ContainsTarget = (target, tweenType) =>
-            {
+            containsTarget = (target, tweenType) => {
                 return tweenType < 0
-                    ? this.target == target
-                    : this.target == target && this.type == tweenType;
+                    ? _target == target
+                    : _target == target && _type == tweenType;
             };
 
         }

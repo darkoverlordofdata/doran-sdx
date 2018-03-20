@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx.Utils 
-{
+namespace Sdx.Utils {
 
 	public const string PathSeparator  = "/";
 	public const char PathSeparatorChar  = '/';
@@ -23,87 +22,77 @@ namespace Sdx.Utils
 	 * 
 	 */
 	
-	public class File : Object 
-	{
+	public class File : Object {
 
 		//  public Posix.Stat? stat;
-		private SDL.RWops file;
-		private string path;
-		private string[] files;
+		private SDL.RWops _file;
+		private string _path;
+		private string[] _files;
 
-		public File(string path) 
-		{
-			this.path = path;
-    		file = new SDL.RWops.FromFile(path, "r");
+		public File(string path) {
+			_path = path;
+    		_file = new SDL.RWops.FromFile(path, "r");
 		} 
 
-		public string GetPath() 
-		{
-			return path;
+		public string getPath() {
+			return _path;
 		}
 
 		/**
 		 * the name is everything after the final separator
 		 */
-		public string GetName() 
-		{
-			for (var i=path.length-1; i>0; i--)
-				if (path[i] == PathSeparatorChar)
-					return path.SubString(i+1);
-			return path;
+		public string getName() {
+			for (var i=_path.length-1; i>0; i--)
+				if (_path[i] == PathSeparatorChar)
+					return _path.SubString(i+1);
+			return _path;
 		}
 
 		/**
 		 * the parent is everything prior to the final separator
 		 */
-		public string GetParent() 
-		{
-			var i = path.LastIndexOf(PathSeparator);
-			return i < 0 ? "" : path.SubString(0, i);
+		public string getParent() {
+			var i = _path.LastIndexOf(PathSeparator);
+			return i < 0 ? "" : _path.SubString(0, i);
 		}
 
 		/**
 		 * check if the represented struture exists on the virtual disk
 		 */
-		public bool Exists() 
-		{
-			return file != null;
+		public bool exists() {
+			return _file != null;
 		}
 
 		/**
 		 * is it a file?
 		 */
-		public bool IsFile() 
-		{
-			return file != null;
+		public bool isFile() {
+			return _file != null;
 		}
 
 		/**
 		 * is it a folder?
 		 */
-		public bool IsDirectory() 
-		{
+		public bool isDirectory() {
 			return false;
 		}
 
 		/**
 		 * get the length of the file
 		 */
-		public int Length() 
-		{
-			return file != null ? (int)file.size : 0;
+		public int length() {
+			return _file != null ? (int)_file.size : 0;
 		}
 		
 		/**
 		 * read the contents into a string buffer
 		 */
-		public string Read() 
-		{
-			if (!Exists()) return "";
-			var size = (int)file.size;
+		public string read() {
+			if (!exists()) return "";
+			var size = (int)_file.size;
 	    	var ioBuff = new char[size+2];
     
-    		var stat = file.Read((void*)ioBuff, 2, (size_t)size/2);
+    		var stat = _file.Read((void*)ioBuff, 2, (size_t)size/2);
 			var lines = "";
 			lines = lines + (string)ioBuff;
 			return lines;
@@ -112,10 +101,9 @@ namespace Sdx.Utils
 			/**
 		 * return the list of files in the folder
 		 */
-		public string[] List() 
-		{
-			files = new string[0];
-			return files;
+		public string[] list() {
+			_files = new string[0];
+			return _files;
 		}
 	}
 }

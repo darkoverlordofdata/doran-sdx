@@ -13,17 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-using SDL.Video;
-
- namespace  Sdx.Math 
-{ 
+namespace  Sdx.Math { 
 
     /**
      * Float (x,y) multiplier
      */
     [SimpleType]
-	public struct Scale 
-	{
+	public struct Scale {
 		public float x;
 		public float y;
 	}
@@ -32,8 +28,7 @@ using SDL.Video;
      * int (x,y) position
      */
     [SimpleType]
-    public struct Point2 
-    {
+    public struct Point2 {
         public int x;
         public int y;
     }
@@ -47,16 +42,14 @@ using SDL.Video;
      * @param hi upper range limit
      * @return value adjusted to range
      */
-    public inline float Clamp(float value, float low, float hi) 
-    {
+    public inline float clamp(float value, float low, float hi) {
 	    return value < low ? low : value > hi ? hi : value;
     }
     
     /**
      * Float (x,y) Vector math
      */
-    public struct Vector2 
-    {
+    public struct Vector2 {
 
         public float x;
         public float y;
@@ -68,39 +61,32 @@ using SDL.Video;
         public static Vector2 Right { get {return {  1,  0 }; } }
         public static Vector2 Up    { get {return {  0,  1 }; } }
 
-        public static float Distance(Vector2 a, Vector2 b) 
-        {
+        public static float distance(Vector2 a, Vector2 b) {
             return GLib.Math.sqrtf( (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y) );
         }
 
-        public Vector2(float x = 0, float y = 0) 
-        {
+        public Vector2(float x = 0, float y = 0) {
             this.x = x;
             this.y = y;
         }
 
-        public inline Vector2 Mul(float f) 
-        {
+        public inline Vector2 mul(float f) {
             return { x*f, y*f };
         }
 
-        public inline Vector2 Div(float f) 
-        {
+        public inline Vector2 div(float f) {
             return { x/f, y/f };
         }
 
-        public inline float Len() 
-        {
+        public inline float len() {
             return GLib.Math.sqrtf(x*x + y*y);
         }
 
-        public inline Vector2 Add(Vector2 v) 
-        {
+        public inline Vector2 add(Vector2 v) {
             return { x+v.x, y+v.y };
         }
 
-        public inline Vector2 Sub(Vector2 v) 
-        {
+        public inline Vector2 sub(Vector2 v) {
             return { x-v.x, y-v.y };
         }            
     }

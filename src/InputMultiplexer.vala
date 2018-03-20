@@ -13,75 +13,73 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace Sdx 
-{
+namespace Sdx {
 	/** 
 	 * An {@link InputProcessor} that delegates to an ordered list of other InputProcessors. Delegation for an event stops if a
 	 * processor returns true, which indicates that the event was handled.
 	 * based on code by  Nathan Sweet 
 	 */
-	public class InputMultiplexer : Object
-	{
+	public class InputMultiplexer : Object {
 		public GenericArray<InputProcessor> processors;
 
-		public InputMultiplexer() 
-		{
+		public InputMultiplexer() {
 			processors = new GenericArray<InputProcessor>(4);
 		}
-		public void Add(InputProcessor processor)
-		{
+
+		public void add(InputProcessor processor) {
 			processors.Add(processor);
 		}
-		public void Remove(InputProcessor processor)
-		{
+
+		public void remove(InputProcessor processor) {
 			processors.Remove(processor);
 		}
-		public bool KeyDown(int keycode)
-		{
+
+		public bool keyDown(int keycode) {
 			for (var i=0; i<processors.length; i++)
-				if (processors.Get(i).KeyDown(keycode)) return true;
+				if (processors[i].keyDown(keycode)) return true;
+			//  if (processors.Get(i).keyDown(keycode)) return true;
 			return false;
 		}
-		public bool KeyUp(int keycode)
-		{
+
+		public bool keyUp(int keycode) {
 			for (var i=0; i<processors.length; i++)
-				if (processors.Get(i).KeyUp(keycode)) return true;
+				if (processors[i].keyUp(keycode)) return true;
 			return false;
 		}
-		public bool KeyTyped(char character)
-		{
+
+		public bool keyTyped(char character) {
 			for (var i=0; i<processors.length; i++)
-				if (processors.Get(i).KeyTyped(character)) return true;
+				if (processors[i].keyTyped(character)) return true;
 			return false;
 		}
-		public bool TouchDown(int x, int y, int pointer, int button)
-		{
+
+		public bool touchDown(int x, int y, int pointer, int button) {
 			for (var i=0; i<processors.length; i++)
-				if (processors.Get(i).TouchDown(x, y, pointer, button)) return true;
+				if (processors[i].touchDown(x, y, pointer, button)) return true;
 			return false;
 		}
-		public bool TouchUp(int x, int y, int pointer, int button)
-		{
+
+		public bool touchUp(int x, int y, int pointer, int button) {
 			for (var i=0; i<processors.length; i++)
-				if (processors.Get(i).TouchUp(x, y, pointer, button)) return true;
+				if (processors[i].touchUp(x, y, pointer, button)) return true;
 			return false;
 		}
-		public bool TouchDragged(int x, int y, int pointer)
-		{
+
+		public bool touchDragged(int x, int y, int pointer) {
 			for (var i=0; i<processors.length; i++)
-				if (processors.Get(i).TouchDragged(x, y, pointer)) return true;
+				if (processors[i].touchDragged(x, y, pointer)) return true;
 			return false;
 		}
-		public bool MouseMoved(int x, int y)
-		{
+
+		public bool mouseMoved(int x, int y) {
 			for (var i=0; i<processors.length; i++)
-				if (processors.Get(i).MouseMoved(x, y)) return true;
+				if (processors[i].mouseMoved(x, y)) return true;
 			return false;
 		}
-		public bool Scrolled(int amount)
-		{
+
+		public bool scrolled(int amount) {
 			for (var i=0; i<processors.length; i++)
-				if (processors.Get(i).Scrolled(amount)) return true;
+				if (processors[i].scrolled(amount)) return true;
 			return false;
 		}
 	}

@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-namespace  Sdx.Math 
-{
+namespace  Sdx.Math {
     public enum TimelineModes { SEQUENCE, PARALLEL }
     public enum TweenKind { TWEEN, TIMELINE }
     public delegate void TweenCallbackOnEvent(int type, Tweenbase source);
@@ -32,8 +31,7 @@ namespace  Sdx.Math
      * @see Tween
      * @see Timeline
      */
-    public class Tweenbase : Object
-    {
+    public class Tweenbase : Object {
         public enum TweenCallback {
             BEGIN = 0x01,
             START = 0x02,
@@ -48,29 +46,29 @@ namespace  Sdx.Math
             ANY = 0xFF
         }
 
-        protected TweenKind kind;
+        protected TweenKind _kind;
 	    // General
-        private int step;
-        private int repeatCnt;
-        private bool isIterationStep;
-        private bool isYoyo;
+        private int _step;
+        private int _repeatCnt;
+        private bool _isIterationStep;
+        private bool _isYoyo;
 
         // Timings
-        protected float delay;
-        protected float duration;
-        private float repeatDelay;
-        private float currentTime;
-        private float deltaTime;
-        private bool isStarted;  // true when the object is started
-        private bool isInitialized; // true after the delay
-        private bool isFinished; // true when all repetitions are done
-        private bool isKilled;   // true when kill was called
-        private bool isPaused;   // true when pause was called
+        protected float _delay;
+        protected float _duration;
+        private float _repeatDelay;
+        private float _currentTime;
+        private float _deltaTime;
+        private bool _isStarted;  // true when the object is started
+        private bool _isInitialized; // true after the delay
+        private bool _isFinished; // true when all repetitions are done
+        private bool _isKilled;   // true when kill was called
+        private bool _isPaused;   // true when pause was called
 
 	    // Misc
-        private TweenCallbackOnEvent callback;
-        private int callbackTriggers;
-        private void* userData;
+        private TweenCallbackOnEvent _callback;
+        private int _callbackTriggers;
+        private void* _userData;
 
 	    // Package access
         public bool isAutoRemoveEnabled;
@@ -103,24 +101,24 @@ namespace  Sdx.Math
         // -------------------------------------------------------------------------
 
         // Main
-        protected void* target;
-        protected Class* targetClass;
-        protected TweenAccessor accessor;
-        protected int type;
-        protected Interpolation equation;
+        protected void* _target;
+        protected Class* _targetClass;
+        protected TweenAccessor _accessor;
+        protected int _type;
+        protected Interpolation _equation;
 
     	// General
-        protected bool isFrom;
-        protected bool isRelative;
-        protected int combinedAttrsCnt;
-        protected int waypointsCnt;
+        protected bool _isFrom;
+        protected bool _isRelative;
+        protected int _combinedAttrsCnt;
+        protected int _waypointsCnt;
     
         // Values
-        protected float[] startValues = new float[combinedAttrsLimit];
-        protected float[] targetValues = new float[combinedAttrsLimit];
+        protected float[] _startValues = new float[combinedAttrsLimit];
+        protected float[] _targetValues = new float[combinedAttrsLimit];
 
     	// Buffers
-	    protected float[] accessorBuffer = new float[combinedAttrsLimit];
+	    protected float[] _accessorBuffer = new float[combinedAttrsLimit];
 
         
         // -------------------------------------------------------------------------
@@ -128,11 +126,11 @@ namespace  Sdx.Math
         // -------------------------------------------------------------------------
         //  public enum Modes {SEQUENCE, PARALLEL}
 
-        protected GenericArray<Tweenbase> children;
-        protected Tweenbase current;
-        protected Tweenbase parent;
-        protected TimelineModes mode;
-        protected bool isBuilt;
+        protected GenericArray<Tweenbase> _children;
+        protected Tweenbase _current;
+        protected Tweenbase _parent;
+        protected TimelineModes _mode;
+        protected bool _isBuilt;
 
         public delegate Tweenbase TweenReset();
 
@@ -153,39 +151,35 @@ namespace  Sdx.Math
          * later reuse. Note that if you use a {@link TweenManager}, this method
          * is automatically called once the animation is finished.
          */
-        public delegate void TweenFree();
+        public delegate void TweenClear();
         public delegate Tweenbase TweenStart(TweenManager? manager = null);
 
         
         /* Virtual methods */
-        protected TweenReset Reset = () => {};
-        public TweenBuild Build = () => {};
-        public TweenFree Free = () => {};
-        public TweenStart Start = (manager) => {};
+        protected TweenReset reset = () => {};
+        public TweenBuild build = () => {};
+        public TweenClear clear = () => {};
+        public TweenStart start = (manager) => {};
 
-        public Tweenbase()
-        {
-            Reset = () =>
-            {
-                step = -2;
-                repeatCnt = 0;
-                isIterationStep = isYoyo = false;
+        public Tweenbase() {
+            reset = () => {
+                _step = -2;
+                _repeatCnt = 0;
+                _isIterationStep = _isYoyo = false;
 
-                delay = duration = repeatDelay = currentTime = deltaTime = 0;
-                isStarted = isInitialized = isFinished = isKilled = isPaused = false;
+                _delay = _duration = _repeatDelay = _currentTime = _deltaTime = 0;
+                _isStarted = _isInitialized = _isFinished = _isKilled = _isPaused = false;
 
-                callback = null;
-                callbackTriggers = TweenCallback.COMPLETE;
-                userData = null;
+                _callback = null;
+                _callbackTriggers = TweenCallback.COMPLETE;
+                _userData = null;
 
                 isAutoRemoveEnabled = isAutoStartEnabled = true;
                 return this;
             };
 
-            Start = (manager) =>
-            {
-                if (manager == null)
-                {
+            start = (manager) => {
+                if (manager == null) {
                     /**
                      * Starts or restarts the object unmanaged. You will need to take care of
                      * its life-cycle. If you want the tween to be managed for you, use a
@@ -193,19 +187,17 @@ namespace  Sdx.Math
                      *
                      * @return The current object, for chaining instructions.
                      */
-                    Build();
-                    currentTime = 0;
-                    isStarted = true;
-                }
-                else
-                {
+                    build();
+                    _currentTime = 0;
+                    _isStarted = true;
+                } else {
                     /**
                      * Convenience method to add an object to a manager. Its life-cycle will be
                      * handled for you. Relax and enjoy the animation.
                      *
                      * @return The current object, for chaining instructions.
                      */
-                    manager.Add(this);
+                    manager.add(this);
                 }
                 return this;
             };
@@ -244,9 +236,8 @@ namespace  Sdx.Math
          * @param delay A duration.
          * @return The current object, for chaining instructions.
          */
-        public Tweenbase Delay(float delay)
-        {
-            this.delay += delay;
+        public Tweenbase delay(float delay) {
+            _delay += delay;
             return this;
         }
 
@@ -254,24 +245,21 @@ namespace  Sdx.Math
          * Kills the tween or timeline. If you are using a TweenManager, this object
          * will be removed automatically.
          */
-        public void Kill()
-        {
-            isKilled = true;
+        public void kill() {
+            _isKilled = true;
         }
         /**
          * Pauses the tween or timeline. Further update calls won't have any effect.
          */
-        public void Pause()
-        {
-            isPaused = true;
+        public void pause() {
+            _isPaused = true;
         }
 
         /**
          * Resumes the tween or timeline. Has no effect is it was no already paused.
          */
-        public void Resume()
-        {
-            isPaused = false;
+        public void resume() {
+            _isPaused = false;
         }
 
         /**
@@ -282,14 +270,13 @@ namespace  Sdx.Math
          * @param delay A delay between each iteration.
          * @return The current tween or timeline, for chaining instructions.
          */
-        public Tweenbase Repeat(int count, float delay=0)
-        {
-            if (isStarted) throw new Exception.RuntimeException("You can't change the repetitions of a tween or timeline once it is started");
-            repeatCnt = count;
-            repeatDelay = delay >= 0 ? delay : 0;
-            isYoyo = false;
-            return this;
-            
+        public Tweenbase repeat(int count, float delay=0) {
+            if (_isStarted) 
+                throw new Exception.RuntimeException("You can't change the repetitions of a tween or timeline once it is started");
+            _repeatCnt = count;
+            _repeatDelay = delay >= 0 ? delay : 0;
+            _isYoyo = false;
+            return this;            
         }
 
         /**
@@ -301,14 +288,13 @@ namespace  Sdx.Math
          * @param delay A delay before each repetition.
          * @return The current tween or timeline, for chaining instructions.
          */
-        public Tweenbase RepeatYoyo(int count, float delay=0)
-        {
-            if (isStarted) throw new Exception.RuntimeException("You can't change the repetitions of a tween or timeline once it is started");
-            repeatCnt = count;
-            repeatDelay = delay >= 0 ? delay : 0;
-            isYoyo = true;
-            return this;
-            
+        public Tweenbase repeatYoyo(int count, float delay=0) {
+            if (_isStarted) 
+                throw new Exception.RuntimeException("You can't change the repetitions of a tween or timeline once it is started");
+            _repeatCnt = count;
+            _repeatDelay = delay >= 0 ? delay : 0;
+            _isYoyo = true;
+            return this;            
         }
 
         /**
@@ -318,9 +304,8 @@ namespace  Sdx.Math
          *
          * @see TweenCallback
          */
-        public Tweenbase SetCallback(TweenCallbackOnEvent callback)
-        {
-            this.callback = callback;
+        public Tweenbase setCallback(TweenCallbackOnEvent callback) {
+            _callback = callback;
             return this;
         }
         
@@ -348,9 +333,8 @@ namespace  Sdx.Math
          * @param flags one or more triggers, separated by the '|' operator.
          * @see TweenCallback
          */
-        public Tweenbase SetCallbackTriggers(int flags)
-        {
-            callbackTriggers = flags;
+        public Tweenbase setCallbackTriggers(int flags) {
+            _callbackTriggers = flags;
             return this;
         }
 
@@ -361,9 +345,8 @@ namespace  Sdx.Math
          * @param data Any kind of object.
          * @return The current tween or timeline, for chaining instructions.
          */
-        public Tweenbase SetUserData(void* data)
-        {
-            userData = data;
+        public Tweenbase setUserData(void* data) {
+            _userData = data;
             return this;
         }
 
@@ -375,33 +358,29 @@ namespace  Sdx.Math
          * Gets the delay of the tween or timeline. Nothing will happen before
          * this delay.
          */
-        public float GetDelay()
-        {
-            return delay;
+        public float getDelay() {
+            return _delay;
         }
 
         /**
          * Gets the duration of a single iteration.
          */
-        public float GetDuration()
-        {
-            return duration;
+        public float getDuration() {
+            return _duration;
         }
 
         /**
          * Gets the number of iterations that will be played.
          */
-        public int GetRepeatCount()
-        {
-            return repeatCnt;
+        public int getRepeatCount() {
+            return _repeatCnt;
         }
         
         /**
          * Gets the delay occuring between two iterations.
          */
-        public float GetRepeatDelay()
-        {
-    		return repeatDelay;
+        public float getRepeatDelay() {
+    		return _repeatDelay;
         }
         
         /**
@@ -411,18 +390,16 @@ namespace  Sdx.Math
          * fullDuration = delay + duration + (repeatDelay + duration) * repeatCnt
          * }}}
          */
-        public float GetFullDuration() 
-        {
-            if (repeatCnt < 0) return -1;
-            return delay + duration + (repeatDelay + duration) * repeatCnt;
+        public float getFullDuration() {
+            if (_repeatCnt < 0) return -1;
+            return _delay + _duration + (_repeatDelay + _duration) * _repeatCnt;
         }
 
         /**
          * Gets the attached data, or null if none.
          */
-        public void* GetUserData()
-        {
-            return userData;
+        public void* getUserData() {
+            return _userData;
         }
 
         /**
@@ -434,25 +411,22 @@ namespace  Sdx.Math
          *  * -1 means that we are before the first iteration,
          *  * repeatCount*2 + 1 means that we are after the last iteration
          */
-        public int GetStep() 
-        {
-            return step;
+        public int getStep() {
+            return _step;
         }
 
         /**
          * Gets the local time.
          */
-        public float GetCurrentTime() 
-        {
-            return currentTime;
+        public float getCurrentTime() {
+            return _currentTime;
         }
         
         /**
          * Returns true if the tween or timeline has been started.
          */
-        public bool IsStarted() 
-        {
-            return isStarted;
+        public bool isStarted() {
+            return _isStarted;
         }
         
         /**
@@ -460,36 +434,32 @@ namespace  Sdx.Math
          * values for tweens are stored at initialization time. This initialization
          * takes place right after the initial delay, if any.
          */
-        public bool IsInitialized() 
-        {
-            return isInitialized;
+        public bool isInitialized() {
+            return _isInitialized;
         }
         
         /**
          * Returns true if the tween is finished (i.e. if the tween has reached
          * its end or has been killed). If you don't use a TweenManager, you may
-         * want to call {@link Free} to reuse the object later.
+         * want to call {@link Clear} to reuse the object later.
          */
-        public bool IsFinished() 
-        {
-            return isFinished || isKilled;
+        public bool isFinished() {
+            return _isFinished || _isKilled;
         }
 
         /**
          * Returns true if the iterations are played as yoyo. Yoyo means that
          * every two iterations, the animation will be played backwards.
          */
-        public bool IsYoyo() 
-        {
-            return isYoyo;
+        public bool isYoyo() {
+            return _isYoyo;
         }
 
         /**
          * Returns true if the tween or timeline is currently paused.
          */
-        public bool IsPaused() 
-        {
-            return isPaused;
+        public bool isPaused() {
+            return _isPaused;
         }
 
         // -------------------------------------------------------------------------
@@ -499,9 +469,9 @@ namespace  Sdx.Math
         public delegate void TweenForceEndValues();
         public delegate bool TweenContainsTarget(void* target, int tweenType=-1);
        
-        protected TweenForceStartValues ForceStartValues = () => {};
-        protected TweenForceEndValues ForceEndValues = () => {};
-        public TweenContainsTarget ContainsTarget = (target, tweenType) => {};
+        protected TweenForceStartValues forceStartValues = () => {};
+        protected TweenForceEndValues forceEndValues = () => {};
+        public TweenContainsTarget containsTarget = (target, tweenType) => {};
 
         // -------------------------------------------------------------------------
         // Protected API
@@ -509,46 +479,41 @@ namespace  Sdx.Math
         public delegate void TweenInitializeOverride();
         public delegate void TweenUpdateOverride(int step, int lastStep, bool isIterationStep, float delta);
 
-        protected TweenInitializeOverride InitializeOverride = () => {}; 
-        protected TweenUpdateOverride UpdateOverride = (step, lastStep, isIterationStep, delta) => {}; 
+        protected TweenInitializeOverride initializeOverride = () => {}; 
+        protected TweenUpdateOverride updateOverride = (step, lastStep, isIterationStep, delta) => {}; 
 
-        protected void ForceToStart() 
-        {
-            currentTime = -delay;
-            step = -1;
-            isIterationStep = false;
-            if (IsReverse(0)) ForceEndValues();
-            else ForceStartValues();
+        protected void forceToStart() {
+            _currentTime = -_delay;
+            _step = -1;
+            _isIterationStep = false;
+            if (isReverse(0)) forceEndValues();
+            else forceStartValues();
         }
 
-        protected void ForceToEnd(float time) 
-        {
-            currentTime = time - GetFullDuration();
-            step = repeatCnt*2 + 1;
-            isIterationStep = false;
-            if (IsReverse(repeatCnt*2)) ForceStartValues();
-            else ForceEndValues();
+        protected void forceToEnd(float time) {
+            _currentTime = time - getFullDuration();
+            _step = _repeatCnt*2 + 1;
+            _isIterationStep = false;
+            if (isReverse(_repeatCnt*2)) forceStartValues();
+            else forceEndValues();
         }
         
-        protected void CallCallback(int type) 
-        {
+        protected void callCallback(int type) {
             //  print("CallCallback %d\n", type);
-            if (callback != null && (callbackTriggers & type) > 0) callback(type, this);
+            if (_callback != null && (_callbackTriggers & type) > 0) _callback(type, this);
         }
         
 
-        protected bool IsReverse(int step) 
-        {
-            return isYoyo && GLib.Math.fabs(step%4) == 2;
+        protected bool isReverse(int step) {
+            return _isYoyo && GLib.Math.fabs(step%4) == 2;
         }
 
-        protected bool IsValid(int step) 
-        {
-            return (step >= 0 && step <= repeatCnt*2) || repeatCnt < 0;
+        protected bool isValid(int step) {
+            return (_step >= 0 && _step <= _repeatCnt*2) || _repeatCnt < 0;
         }
 
-        public void KillTarget(void* target, int tweenType=-1) {
-            if (ContainsTarget(target, tweenType)) Kill();
+        public void killTarget(void* target, int tweenType=-1) {
+            if (containsTarget(target, tweenType)) kill();
         }
 
         // -------------------------------------------------------------------------
@@ -565,160 +530,140 @@ namespace  Sdx.Math
          *
          * @param delta A delta time between now and the last call.
          */
-        public void Update(float delta)
-        {
+        public void update(float delta) {
             //  print(" isStarted %s\n", isStarted.ToString());
             //  print(" isPaused %s\n", isPaused.ToString());
             //  print(" isKilled %s\n", isKilled.ToString());
-            if (!isStarted || isPaused || isKilled) return;
+            if (!_isStarted || _isPaused || _isKilled) return;
 
-            deltaTime = delta;
+            _deltaTime = delta;
 
-            if (!isInitialized) {
-                Initialize();
+            if (!_isInitialized) {
+                initialize();
             }
 
-            if (isInitialized) {
-                TestRelaunch();
-                UpdateStep();
-                TestCompletion();
+            if (_isInitialized) {
+                testRelaunch();
+                updateStep();
+                testCompletion();
             }
 
-            currentTime += deltaTime;
-            deltaTime = 0;
+            _currentTime += _deltaTime;
+            _deltaTime = 0;
 
         }
 
-        private void Initialize() 
-        {
-            if (currentTime+deltaTime >= delay) 
-            {
-                InitializeOverride();
-                isInitialized = true;
-                isIterationStep = true;
-                step = 0;
-                deltaTime -= delay-currentTime;
-                currentTime = 0;
-                CallCallback(TweenCallback.BEGIN);
-                CallCallback(TweenCallback.START);
+        private void initialize() {
+            if (_currentTime+_deltaTime >= _delay) {
+                initializeOverride();
+                _isInitialized = true;
+                _isIterationStep = true;
+                _step = 0;
+                _deltaTime -= _delay-_currentTime;
+                _currentTime = 0;
+                callCallback(TweenCallback.BEGIN);
+                callCallback(TweenCallback.START);
             }
         }
         
-        private void TestRelaunch() 
-        {
-            if (!isIterationStep && repeatCnt >= 0 && step < 0 && currentTime+deltaTime >= 0) 
-            {
-                assert(step == -1);
-                isIterationStep = true;
-                step = 0;
-                float delta = 0-currentTime;
-                deltaTime -= delta;
-                currentTime = 0;
-                CallCallback(TweenCallback.BEGIN);
-                CallCallback(TweenCallback.START);
-                UpdateOverride(step, step-1, isIterationStep, delta);
+        private void testRelaunch() {
+            if (!_isIterationStep && _repeatCnt >= 0 && _step < 0 && _currentTime+_deltaTime >= 0) {
+                assert(_step == -1);
+                _isIterationStep = true;
+                _step = 0;
+                float delta = 0-_currentTime;
+                _deltaTime -= delta;
+                _currentTime = 0;
+                callCallback(TweenCallback.BEGIN);
+                callCallback(TweenCallback.START);
+                updateOverride(_step, _step-1, _isIterationStep, delta);
 
-            } 
-            else if (!isIterationStep && repeatCnt >= 0 && step > repeatCnt*2 && currentTime+deltaTime < 0) 
-            {
-                assert(step == repeatCnt*2 + 1);
-                isIterationStep = true;
-                step = repeatCnt*2;
-                float delta = 0-currentTime;
-                deltaTime -= delta;
-                currentTime = duration;
-                CallCallback(TweenCallback.BACK_BEGIN);
-                CallCallback(TweenCallback.BACK_START);
-                UpdateOverride(step, step+1, isIterationStep, delta);
+            } else if (!_isIterationStep && _repeatCnt >= 0 && _step > _repeatCnt*2 && _currentTime+_deltaTime < 0) {
+                assert(_step == _repeatCnt*2 + 1);
+                _isIterationStep = true;
+                _step = _repeatCnt*2;
+                float delta = 0-_currentTime;
+                _deltaTime -= delta;
+                _currentTime = _duration;
+                callCallback(TweenCallback.BACK_BEGIN);
+                callCallback(TweenCallback.BACK_START);
+                updateOverride(_step, _step+1, _isIterationStep, delta);
             }
         }
 
-        private void UpdateStep() 
-        {
-            while (IsValid(step)) 
-            {
-                if (!isIterationStep && currentTime+deltaTime <= 0) 
-                {
-                    isIterationStep = true;
-                    step -= 1;
+        private void updateStep() {
+            while (isValid(_step)) {
+                if (!_isIterationStep && _currentTime+_deltaTime <= 0) {
+                    _isIterationStep = true;
+                    _step -= 1;
 
-                    float delta = 0-currentTime;
-                    deltaTime -= delta;
-                    currentTime = duration;
+                    float delta = 0-_currentTime;
+                    _deltaTime -= delta;
+                    _currentTime = _duration;
 
-                    if (IsReverse(step)) ForceStartValues(); else ForceEndValues();
-                    CallCallback(TweenCallback.BACK_START);
-                    UpdateOverride(step, step+1, isIterationStep, delta);
+                    if (isReverse(_step)) forceStartValues(); else forceEndValues();
+                    callCallback(TweenCallback.BACK_START);
+                    updateOverride(_step, _step+1, _isIterationStep, delta);
 
-                } 
-                else if (!isIterationStep && currentTime+deltaTime >= repeatDelay) 
-                {
-                    isIterationStep = true;
-                    step += 1;
+                } else if (!_isIterationStep && _currentTime+_deltaTime >= _repeatDelay) {
+                    _isIterationStep = true;
+                    _step += 1;
 
-                    float delta = repeatDelay-currentTime;
-                    deltaTime -= delta;
-                    currentTime = 0;
+                    float delta = _repeatDelay-_currentTime;
+                    _deltaTime -= delta;
+                    _currentTime = 0;
 
-                    if (IsReverse(step)) ForceEndValues(); else ForceStartValues();
-                    CallCallback(TweenCallback.START);
-                    UpdateOverride(step, step-1, isIterationStep, delta);
+                    if (isReverse(_step)) forceEndValues(); else forceStartValues();
+                    callCallback(TweenCallback.START);
+                    updateOverride(_step, _step-1, _isIterationStep, delta);
 
-                } 
-                else if (isIterationStep && currentTime+deltaTime < 0) 
-                {
-                    isIterationStep = false;
-                    step -= 1;
+                } else if (_isIterationStep && _currentTime+_deltaTime < 0) {
+                    _isIterationStep = false;
+                    _step -= 1;
 
-                    float delta = 0-currentTime;
-                    deltaTime -= delta;
-                    currentTime = 0;
+                    float delta = 0-_currentTime;
+                    _deltaTime -= delta;
+                    _currentTime = 0;
 
-                    UpdateOverride(step, step+1, isIterationStep, delta);
-                    CallCallback(TweenCallback.BACK_END);
+                    updateOverride(_step, _step+1, _isIterationStep, delta);
+                    callCallback(TweenCallback.BACK_END);
 
-                    if (step < 0 && repeatCnt >= 0) CallCallback(TweenCallback.BACK_COMPLETE);
-                    else currentTime = repeatDelay;
+                    if (_step < 0 && _repeatCnt >= 0) callCallback(TweenCallback.BACK_COMPLETE);
+                    else _currentTime = _repeatDelay;
 
-                } 
-                else if (isIterationStep && currentTime+deltaTime > duration) 
-                {
-                    isIterationStep = false;
-                    step += 1;
+                } else if (_isIterationStep && _currentTime+_deltaTime > _duration) {
+                    _isIterationStep = false;
+                    _step += 1;
 
-                    float delta = duration-currentTime;
-                    deltaTime -= delta;
-                    currentTime = duration;
+                    float delta = _duration-_currentTime;
+                    _deltaTime -= delta;
+                    _currentTime = _duration;
 
-                    UpdateOverride(step, step-1, isIterationStep, delta);
-                    CallCallback(TweenCallback.END);
+                    updateOverride(_step, _step-1, _isIterationStep, delta);
+                    callCallback(TweenCallback.END);
 
-                    if (step > repeatCnt*2 && repeatCnt >= 0) CallCallback(TweenCallback.COMPLETE);
-                    currentTime = 0;
+                    if (_step > _repeatCnt*2 && _repeatCnt >= 0) callCallback(TweenCallback.COMPLETE);
+                    _currentTime = 0;
 
                 } 
-                else if (isIterationStep) 
-                {
-                    float delta = deltaTime;
-                    deltaTime -= delta;
-                    currentTime += delta;
-                    UpdateOverride(step, step, isIterationStep, delta);
+                else if (_isIterationStep) {
+                    float delta = _deltaTime;
+                    _deltaTime -= delta;
+                    _currentTime += delta;
+                    updateOverride(_step, _step, _isIterationStep, delta);
                     break;
 
-                } 
-                else 
-                {
-                    float delta = deltaTime;
-                    deltaTime -= delta;
-                    currentTime += delta;
+                } else {
+                    float delta = _deltaTime;
+                    _deltaTime -= delta;
+                    _currentTime += delta;
                     break;
                 }
             }
         }
             
-        private void TestCompletion() 
-        {
-            isFinished = repeatCnt >= 0 && (step > repeatCnt*2 || step < 0);
+        private void testCompletion() {
+            _isFinished = _repeatCnt >= 0 && (_step > _repeatCnt*2 || _step < 0);
         }
 
     }

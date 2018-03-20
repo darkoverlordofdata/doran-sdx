@@ -18,19 +18,16 @@
  * 
  * Gemometry, Vectors, Movement
  */
-namespace  Sdx.Math 
-{
+namespace  Sdx.Math {
     /** 
      * Takes a linear value in the range of 0-1 and outputs a (usually) non-linear, interpolated value.
      * based on code by  Nathan Sweet & Aurelien Ribon
      */
-    public class Interpolation : Object
-    {
+    public class Interpolation : Object {
         /**
          * Merges together formulae from libGDX and Universal Tween Engine
          */
-        public enum Kind 
-        {
+        public enum Kind {
             Linear, Smooth, Smooth2, Smoother,
             Pow, PowIn, PowOut, Sin, SinIn, SinOut,
             Exp, ExpIn, ExpOut, Circle, CircleIn, CircleOut,
@@ -93,10 +90,9 @@ namespace  Sdx.Math
 
         public delegate float InterpolationApply(float a);
 
-        public InterpolationApply Apply = (a) => { return 0; };
+        public InterpolationApply apply = (a) => { return 0; };
 
-        public static void Initialize()
-        {
+        public static void initialize() {
             linear = new Linear();
             smooth = new Smooth();
             smooth2 = new Smooth2();
@@ -152,151 +148,115 @@ namespace  Sdx.Math
         }
 
         
-        public class Linear : Interpolation
-        {
-            public Linear() { Apply = (a) => { return a; }; }
+        public class Linear : Interpolation {
+            public Linear() { apply = (a) => { return a; }; }
         }
-        public class Smooth : Interpolation
-        {
-            public Smooth() { Apply = (a) => { return a * a * (3 - 2 * a); }; }
+
+        public class Smooth : Interpolation {
+            public Smooth() { apply = (a) => { return a * a * (3 - 2 * a); }; }
         }
-        public class Smooth2 : Interpolation
-        {
-            public Smooth2() 
-            { 
-                Apply = (a) => 
-                { 
+
+        public class Smooth2 : Interpolation {
+            public Smooth2() { 
+                apply = (a) => { 
                     a = a * a * (3 - 2 * a);
                     return a * a * (3 - 2 * a);
                 };
             }
         }
 
-        public class Smoother : Interpolation
-        {
-            public Smoother() 
-            { 
-                Apply = (a) => 
-                { 
-                    return Clamp(a * a * a * (a * (a * 6 - 15) + 10), 0, 1); 
+        public class Smoother : Interpolation {
+            public Smoother() { 
+                apply = (a) => { 
+                    return clamp(a * a * a * (a * (a * 6 - 15) + 10), 0, 1); 
                 };
             }
         }
 
-        public class Pow : Interpolation
-        {
-            public Pow(int power) 
-            { 
-                Apply = (a) => 
-                { 
+        public class Pow : Interpolation {
+            public Pow(int power) { 
+                apply = (a) => { 
                     if (a <= 0.5f) return (float)GLib.Math.pow(a * 2, power) / 2;
                     return (float)GLib.Math.pow((a - 1) * 2, power) / (power % 2 == 0 ? -2 : 2) + 1;
                 };
             }
         }
         
-        public class PowIn : Interpolation
-        {
-            public PowIn(int power) 
-            { 
-                Apply = (a) => 
-                { 
+        public class PowIn : Interpolation {
+            public PowIn(int power) { 
+                apply = (a) => { 
 			        return (float)GLib.Math.pow(a, power);
                 };
             }
         }
 
-        public class PowOut : Interpolation
-        {
-            public PowOut(int power) 
-            { 
-                Apply = (a) => 
-                { 
+        public class PowOut : Interpolation {
+            public PowOut(int power) { 
+                apply = (a) => { 
         			return (float)GLib.Math.pow(a - 1, power) * (power % 2 == 0 ? -1 : 1) + 1;
                 };
             }
         }
 
-        public class Sin : Interpolation
-        {
-            public Sin() 
-            { 
-                Apply = (a) => 
-                { 
+        public class Sin : Interpolation {
+            public Sin() { 
+                apply = (a) => { 
 			        return (1 - GLib.Math.cosf((float)(a * GLib.Math.PI))) / 2;
                 };
             }
         }
         
-        public class SinIn : Interpolation
-        {
-            public SinIn() 
-            { 
-                Apply = (a) => 
-                { 
+        public class SinIn : Interpolation {
+            public SinIn() { 
+                apply = (a) => { 
 			        return 1 - GLib.Math.cosf((float)(a * GLib.Math.PI / 2));
                 };
             }
         }
 
-        public class SinOut : Interpolation
-        {
-            public SinOut() 
-            { 
-                Apply = (a) => 
-                { 
+        public class SinOut : Interpolation {
+            public SinOut() { 
+                apply = (a) => { 
         			return GLib.Math.sinf((float)(a * GLib.Math.PI / 2));
                 };
             }
         }
 
-        public class Exp : Interpolation
-        {
-            public Exp(float value, float power) 
-            { 
+        public class Exp : Interpolation {
+            public Exp(float value, float power) { 
                 var min = (float)GLib.Math.pow(value, -power);
                 var scale = 1 / (1 - min);
 
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
                     if (a <= 0.5f) return ((float)GLib.Math.pow(value, power * (a * 2 - 1)) - min) * scale / 2;
                     return (2 - ((float)GLib.Math.pow(value, -power * (a * 2 - 1)) - min) * scale) / 2;
                 };
             }
         }
         
-        public class ExpIn : Interpolation
-        {
-            public ExpIn(float value, float power) 
-            { 
+        public class ExpIn : Interpolation {
+            public ExpIn(float value, float power) { 
                 var min = (float)GLib.Math.pow(value, -power);
                 var scale = 1 / (1 - min);
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
     			    return ((float)GLib.Math.pow(value, power * (a - 1)) - min) * scale;
                 };
             }
         }
         
-        public class ExpOut : Interpolation
-        {
-            public ExpOut(float value, float power) 
-            { 
+        public class ExpOut : Interpolation {
+            public ExpOut(float value, float power) { 
                 var min = (float)GLib.Math.pow(value, -power);
                 var scale = 1 / (1 - min);
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
     			    return 1 - ((float)GLib.Math.pow(value, -power * a) - min) * scale;
                 };
             }
         }
 
-        public class Circle : Interpolation
-        {
-            public Circle() 
-            { 
-                Apply = (a) => 
-                { 
+        public class Circle : Interpolation {
+            public Circle() { 
+                apply = (a) => { 
                     if (a <= 0.5f) {
                         a *= 2;
                         return (1 - (float)GLib.Math.sqrt(1 - a * a)) / 2;
@@ -308,37 +268,28 @@ namespace  Sdx.Math
             }
         }
 
-        public class CircleIn : Interpolation
-        {
-            public CircleIn() 
-            { 
-                Apply = (a) => 
-                { 
+        public class CircleIn : Interpolation {
+            public CircleIn() { 
+                apply = (a) => { 
 			        return 1 - (float)GLib.Math.sqrt(1 - a * a);
                 };
             }
         }
 
-        public class CircleOut : Interpolation
-        {
-            public CircleOut() 
-            { 
-                Apply = (a) => 
-                { 
+        public class CircleOut : Interpolation {
+            public CircleOut() { 
+                apply = (a) => { 
                     a--;
                     return (float)GLib.Math.sqrt(1 - a * a);
                 };
             }
         }
 
-        public class Elastic : Interpolation
-        {
-            public Elastic(float value, float power, int bounce, float scale) 
-            { 
+        public class Elastic : Interpolation {
+            public Elastic(float value, float power, int bounce, float scale) { 
 			    var bounces = (float)(bounce * GLib.Math.PI * (bounce % 2 == 0 ? 1 : -1));
 
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
                     if (a <= 0.5f) {
                         a *= 2;
                         return (float)GLib.Math.pow(value, power * (a - 1)) * GLib.Math.sinf(a * bounces) * scale / 2;
@@ -351,14 +302,11 @@ namespace  Sdx.Math
         }
         
 
-        public class ElasticIn : Interpolation
-        {
-            public ElasticIn(float value, float power, int bounce, float scale) 
-            { 
+        public class ElasticIn : Interpolation {
+            public ElasticIn(float value, float power, int bounce, float scale) { 
 			    var bounces = (float)(bounce * GLib.Math.PI * (bounce % 2 == 0 ? 1 : -1));
 
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
                     if (a >= 0.99) return 1;
                     return (float)GLib.Math.pow(value, power * (a - 1)) * GLib.Math.sinf(a * bounces) * scale;
                 };
@@ -366,14 +314,11 @@ namespace  Sdx.Math
         }
 
 
-        public class ElasticOut : Interpolation
-        {
-            public ElasticOut(float value, float power, int bounce, float scale) 
-            { 
+        public class ElasticOut : Interpolation {
+            public ElasticOut(float value, float power, int bounce, float scale) { 
 			    var bounces = (float)(bounce * GLib.Math.PI * (bounce % 2 == 0 ? 1 : -1));
 
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
                     if (a == 0) return 0;
                     a = 1 - a;
                     return (1 - (float)GLib.Math.pow(value, power * (a - 1)) * GLib.Math.sinf(a * bounces) * scale);
@@ -381,38 +326,31 @@ namespace  Sdx.Math
             }
         }
 
-        public class BounceOut : Interpolation
-        {
-            public BounceOut(int bounces, float[] w = null, float[] h = null) 
-            { 
+        public class BounceOut : Interpolation {
+            public BounceOut(int bounces, float[] w = null, float[] h = null) { 
                 if (bounces < 2 || bounces > 5) throw new Exception.IllegalArgumentException("bounces cannot be < 2 or > 5: " + bounces.ToString());
                 var widths = new float[bounces];
                 var heights = new float[bounces];
-                BounceInit(bounces, ref widths, ref heights);
+                bounceInit(bounces, ref widths, ref heights);
 
-                Apply = (a) => 
-                { 
-                    return BounceApply(a, ref widths, ref heights);
+                apply = (a) => { 
+                    return bounceApply(a, ref widths, ref heights);
                 };
             }
         }
         
-        public class Bounce : Interpolation
-        {
-            public Bounce(int bounces, float[] w = null, float[] h = null) 
-            { 
+        public class Bounce : Interpolation {
+            public Bounce(int bounces, float[] w = null, float[] h = null) { 
                 if (bounces < 2 || bounces > 5) throw new Exception.IllegalArgumentException("bounces cannot be < 2 or > 5: " + bounces.ToString());
                 var widths = new float[bounces];
                 var heights = new float[bounces];
-                BounceInit(bounces, ref widths, ref heights);
+                bounceInit(bounces, ref widths, ref heights);
 
-
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
                     InterpolationApply Out = (a) => {
                         var test = a + widths[0] / 2;
                         if (test < widths[0]) return test / (widths[0] / 2) - 1;
-                        return BounceApply(a, ref widths, ref heights);
+                        return bounceApply(a, ref widths, ref heights);
                     };
                     if (a <= 0.5f) return (1 - Out(1 - a * 2)) / 2;
                     return Out(a * 2 - 1) / 2 + 0.5f;
@@ -420,24 +358,20 @@ namespace  Sdx.Math
             }
         }
         
-        public class BounceIn : Interpolation
-        {
-            public BounceIn(int bounces, float[] w = null, float[] h = null) 
-            { 
+        public class BounceIn : Interpolation {
+            public BounceIn(int bounces, float[] w = null, float[] h = null) { 
                 if (bounces < 2 || bounces > 5) throw new Exception.IllegalArgumentException("bounces cannot be < 2 or > 5: " + bounces.ToString());
                 var widths = new float[bounces];
                 var heights = new float[bounces];
-                BounceInit(bounces, ref widths, ref heights);
+                bounceInit(bounces, ref widths, ref heights);
 
-                Apply = (a) => 
-                { 
-                    return 1 - BounceApply(1 - a, ref widths, ref heights);
+                apply = (a) => { 
+                    return 1 - bounceApply(1 - a, ref widths, ref heights);
                 };
             }
         }
 
-        float BounceApply(float a, ref float[] widths, ref float[] heights) 
-        { 
+        float bounceApply(float a, ref float[] widths, ref float[] heights) { 
             if (a == 1) return 1;
             a += widths[0] / 2;
             var width = 0f, height = 0f;
@@ -455,8 +389,7 @@ namespace  Sdx.Math
                     
         }
 
-        void BounceInit(int bounces, ref float[] widths, ref float[] heights)
-        {
+        void bounceInit(int bounces, ref float[] widths, ref float[] heights) {
             heights[0] = 1;
             switch (bounces) {
             case 2:
@@ -496,14 +429,11 @@ namespace  Sdx.Math
 
         }
 
-        public class Swing : Interpolation
-        {
-            public Swing(float scale) 
-            { 
+        public class Swing : Interpolation {
+            public Swing(float scale) { 
                 scale = scale * 2;
 
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
                     if (a <= 0.5f) {
                         a *= 2;
                         return a * a * ((scale + 1) * a - scale) / 2;
@@ -515,14 +445,11 @@ namespace  Sdx.Math
             }
         }
         
-        public class SwingOut : Interpolation
-        {
-            public SwingOut(float scale) 
-            { 
+        public class SwingOut : Interpolation {
+            public SwingOut(float scale) { 
                 scale = scale * 2;
 
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
                     a--;
                     return a * a * ((scale + 1) * a + scale) + 1;
                };
@@ -530,47 +457,35 @@ namespace  Sdx.Math
         }
 
         
-        public class SwingIn : Interpolation
-        {
-            public SwingIn(float scale) 
-            { 
+        public class SwingIn : Interpolation {
+            public SwingIn(float scale) { 
                 scale = scale * 2;
 
-                Apply = (a) => 
-                { 
+                apply = (a) => { 
 			        return a * a * ((scale + 1) * a - scale);
                 };
             }
         }
 
-        public class QuadIn : Interpolation
-        {
-            public QuadIn() 
-            { 
-                Apply = (a) => 
-                { 
+        public class QuadIn : Interpolation {
+            public QuadIn() { 
+                apply = (a) => { 
                     return a*a;
                 };
             }
         }
 
-        public class QuadOut : Interpolation
-        {
-            public QuadOut() 
-            { 
-                Apply = (a) => 
-                { 
+        public class QuadOut : Interpolation {
+            public QuadOut() { 
+                apply = (a) => { 
                     return -a*(a-2);
                 };
             }
         }
 
-        public class QuadInOut : Interpolation
-        {
-            public QuadInOut() 
-            { 
-                Apply = (a) => 
-                { 
+        public class QuadInOut : Interpolation {
+            public QuadInOut() { 
+                apply = (a) => { 
                     if ((a*=2) < 1) return 0.5f*a*a;
                     a = a-1;
                     return -0.5f * (a*(a-2) - 1);

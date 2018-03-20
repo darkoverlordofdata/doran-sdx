@@ -93,7 +93,7 @@ namespace Sdx.Graphics {
                 this.left = y;
                 this.width = width;
                 this.height = height; 
-                SetRegionXY(x, y, width, height);
+                setRegionXY(x, y, width, height);
             }
 
 
@@ -107,13 +107,13 @@ namespace Sdx.Graphics {
                 this.left = y;
                 this.width = width;
                 this.height = height; 
-                SetRegionXY(region.GetRegionX() + x, region.GetRegionY() + y, width, height);
+                setRegionXY(region.getRegionX() + x, region.getRegionY() + y, width, height);
             }
 
 
         }
 
-        public void SetRegion(float u, float v, float u2, float v2) {
+        public void setRegion(float u, float v, float u2, float v2) {
             var texWidth = this.width;
             var texHeight = this.height;
             regionWidth =(int)GLib.Math.round(GLib.Math.fabs(u2 - u) * texWidth);
@@ -128,25 +128,25 @@ namespace Sdx.Graphics {
             }
         }
 
-        public void SetRegionXY(int x, int y, int width, int height) {
+        public void setRegionXY(int x, int y, int width, int height) {
             var invTexWidth = 1 / this.width;
             var invTexHeight = 1 / this.height;
-            SetRegion(x * invTexWidth, y * invTexHeight,(x + width) * invTexWidth,(y + height) * invTexHeight);
+            setRegion(x * invTexWidth, y * invTexHeight,(x + width) * invTexWidth,(y + height) * invTexHeight);
             regionWidth =(int)GLib.Math.fabs(width);
             regionHeight =(int)GLib.Math.fabs(height);
         }
 
-        public void SetByRegion(TextureRegion region) {
+        public void setByRegion(TextureRegion region) {
             texture = region.texture;
-            SetRegion(region.u, region.v, region.u2, region.v2);
+            setRegion(region.u, region.v, region.u2, region.v2);
         }
 
-        public void SetByRegionXY(TextureRegion region, int x, int y, int width, int height) {            
+        public void setByRegionXY(TextureRegion region, int x, int y, int width, int height) {            
             texture = region.texture;
-            SetRegionXY(region.GetRegionX()+x, region.GetRegionY()+y, width, height);
+            setRegionXY(region.getRegionX()+x, region.getRegionY()+y, width, height);
         }
 
-        public void Flip(bool x, bool y) {
+        public void flip(bool x, bool y) {
             if (x) {
                 var temp = u;
                 u = u2;
@@ -159,92 +159,92 @@ namespace Sdx.Graphics {
             }
         }
 
-        public float GetU() { 
+        public float getU() { 
             return u;
         }
 
-        public void SetU(float u) { 
+        public void setU(float u) { 
             this.u = u;
             regionWidth = (int)GLib.Math.round(GLib.Math.fabs(u2 - u) * this.width);
         }
 
-        public float GetV() {
+        public float getV() {
             return v;
         }
 
-        public void SetV(float v) { 
+        public void setV(float v) { 
             this.v = v;
             regionHeight = (int)GLib.Math.round(GLib.Math.fabs(v2 - v) * this.height);
         }
 
-        public float GetU2() {
+        public float getU2() {
             return u2;
         }
 
-        public void SetU2(float u2) { 
+        public void setU2(float u2) { 
             this.u2 = u2;
             regionWidth = (int)GLib.Math.round(GLib.Math.fabs(u2 - u) * this.width);
         }
 
-        public float GetV2() {
+        public float getV2() {
             return v2;
         }
 
-        public void SetV2(float v2) { 
+        public void setV2(float v2) { 
             this.v2 = v2;
             regionHeight = (int)GLib.Math.round(GLib.Math.fabs(v2 - v) * this.height);
         }
 
-        public int GetRegionX() {
+        public int getRegionX() {
             return (int)GLib.Math.round(u * this.width);
         }
 
-        public void SetRegionX(int x) {
-            SetU(x /(float)this.width);
+        public void setRegionX(int x) {
+            setU(x /(float)this.width);
         }
 
-        public int GetRegionY() {
+        public int getRegionY() {
             return (int)GLib.Math.round(v * this.height);
         }        
 
-        public void SetRegionY(int y) {
-            SetV(y /this.height);
+        public void setRegionY(int y) {
+            setV(y /this.height);
         }
 
         /** 
          * Returns the region's width. 
          */
-        public int GetRegionWidth() {
+        public int getRegionWidth() {
             return regionWidth;
         }
 
-        public void SetRegionWidth(int width) {
-            if (IsFlipX())
-                SetU(u2 + width /(float)this.width);
+        public void setRegionWidth(int width) {
+            if (isFlipX())
+                setU(u2 + width /(float)this.width);
              else 
-                SetU2(u + width /(float)this.width);
+                setU2(u + width /(float)this.width);
         }
         
 
         /** 
          * Returns the region's height. 
          */
-        public int GetRegionHeight() {
+        public int getRegionHeight() {
             return regionHeight;
         }
 
-        public void SetRegionHeight(int height) { 
-            if (IsFlipY())
-                SetV(v2 + height /(float)this.height);	
+        public void setRegionHeight(int height) { 
+            if (isFlipY())
+                setV(v2 + height /(float)this.height);	
              else 
-                SetV2(v + height /(float)this.height);
+                setV2(v + height /(float)this.height);
         }
         
-        public bool IsFlipX() {
+        public bool isFlipX() {
             return u > u2;
         }
 
-        public bool IsFlipY() {
+        public bool isFlipY() {
             return v > v2;
         }
     }
